@@ -1,4 +1,9 @@
 export default {
+  server: {
+    port: 4000,
+    host: '0.0.0.0',
+  },
+
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
@@ -38,6 +43,7 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
+    // 'insamee-components/nuxt',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules

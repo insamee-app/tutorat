@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div>
+      <!-- <InsameeButton>Bonjour</InsameeButton> -->
       <Logo />
       <h1 class="title">tutorat</h1>
       <div class="links">
