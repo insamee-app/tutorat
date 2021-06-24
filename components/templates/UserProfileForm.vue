@@ -1,6 +1,10 @@
 <template>
-  <InsameeCard closable @close="$emit('close')">
-    <template #header>Modifier mon profil</template>
+  <InsameeAppCard>
+    <template #header>
+      <InsameeAppCardHeader closable @close="$emit('close')">
+        <InsameeAppCardTitle> Modifier mon profil </InsameeAppCardTitle>
+      </InsameeAppCardHeader>
+    </template>
     <form action="#" class="grid grid-cols-1 gap-4" @submit.prevent="sendUser">
       <InsameeLabeledInput
         v-model="$v.fieldsProfile.lastName.$model"
@@ -18,16 +22,13 @@
         autocomplete="given-name"
         label="Prénom"
       />
-      <div>
-        <InsameeAppLabel name="currentRole" label="Rôle" input />
-        <AppSelect
-          v-model="$v.fieldsProfile.currentRole.$model"
-          name="currentRole"
-          :options="['etudiant', 'professeur']"
-          label="Rôles"
-          choose-text
-        />
-      </div>
+      <AppSelect
+        v-model="$v.fieldsProfile.currentRole.$model"
+        name="currentRole"
+        :items="currentRoles"
+        label="Rôles"
+        choose-text
+      />
       <InsameeLabeledInput
         v-model.number="$v.fieldsProfile.graduationYear.$model"
         :error-message="graduationYearMessage"
@@ -38,26 +39,32 @@
       />
       <div>
         <InsameeAppLabel
-          name="preferedSubjects"
+          name="preferredSubjects"
           label="Matières préférées"
           input
         />
-        <AppSelect :options="fakeSubjects" />
+        <FetchMultiSelect
+          v-model="fieldsProfile.preferredSubjects"
+          ressource="subjects"
+        />
       </div>
       <div>
         <InsameeAppLabel
-          name="difficulSubjects"
-          label="Matières en difficulté"
+          name="difficultiesSubjects"
+          label="Matières en difficultées"
           input
         />
-        <AppSelect :options="fakeSubjects" />
+        <FetchMultiSelect
+          v-model="fieldsProfile.difficultiesSubjects"
+          ressource="subjects"
+        />
       </div>
       <InsameeLabeledTextarea
         v-model="$v.fieldsProfile.text.$model"
-        name="presentation"
-        placeholder="Présentation"
+        name="description"
+        placeholder="Description"
         :error-message="textMessage"
-        label="Votre présentation"
+        label="Votre description de tuteur"
       />
       <InsameeLabeledInput
         v-model="$v.fieldsProfile.urlFacebook.$model"
@@ -102,13 +109,12 @@
       </div>
       <InsameeAppListError :errors="errors" full />
     </form>
-  </InsameeCard>
+  </InsameeAppCard>
 </template>
 
 <script>
-// import { mapState } from 'vuex'
 import { numeric, between, maxLength, url } from 'vuelidate/lib/validators'
-
+import { mapState } from 'vuex'
 const date = new Date()
 
 export default {
@@ -121,15 +127,6 @@ export default {
   },
   data() {
     return {
-      currentRoles: 'etudiant',
-      fakeSubjects: [
-        'Mathématiques 4.1',
-        'Anglais',
-        'EPS',
-        'SHS',
-        'Sécurité Informatique',
-        'Programmation Web',
-      ],
       errors: [],
       loading: false,
       fieldsProfile: {
@@ -138,9 +135,8 @@ export default {
         currentRole: '',
         text: '',
         mobile: '',
-        skills: [],
-        focusInterests: [],
-        associations: [],
+        preferredSubjects: [],
+        difficultiesSubjects: [],
         graduationYear: 0,
         urlFacebook: '',
         urlInstagram: '',
@@ -157,6 +153,8 @@ export default {
         maxLength: maxLength(30),
       },
       currentRole: {},
+      preferredSubjects: {},
+      difficultiesSubjects: {},
       text: {
         maxLength: maxLength(2048),
       },
@@ -180,15 +178,24 @@ export default {
     },
   },
   computed: {
-    /* ...mapState({ currentRoles: (state) => state.data.currentRoles }), */
+    ...mapState({
+      currentRoles: (state) => state.data.currentRoles,
+      subjects: (state) => state.data.subjects,
+    }),
     transformedProfile() {
       const profile = {}
       Object.assign(profile, this.fieldsProfile)
-
-      profile.focusInterests = profile.focusInterests.map((value) => value.id)
-      profile.skills = profile.skills.map((value) => value.id)
-      profile.associations = profile.associations.map((value) => value.id)
-
+      profile.tutoratProfile = {
+        preferredSubjects: this.fieldsProfile.preferredSubjects.map(
+          (sub) => sub.id
+        ),
+        difficultiesSubjects: this.fieldsProfile.difficultiesSubjects.map(
+          (sub) => sub.id
+        ),
+        text: this.fieldsProfile.text,
+      }
+      delete profile.preferredSubjects
+      delete profile.difficultiesSubjects
       return profile
     },
     lastNameMessage() {
@@ -259,27 +266,33 @@ export default {
       return ''
     },
   },
-  /* mounted() {
+  mounted() {
     Object.assign(
       this.fieldsProfile,
       this.$store.getters['auth/toUpdateProfile']
     )
-  }, */
+  },
   methods: {
-    formatAssociations({ name, school }) {
-      return `${name.toUpperCase()} - ${school.name}`
-    },
     async sendUser() {
       this.loading = true
       try {
-        const response = await this.$axios.patch(
+        await this.$axios.patch(
           `/api/v1/profiles/${this.userId}`,
           { ...this.transformedProfile },
           {
             withCredentials: true,
           }
         )
-        this.$store.commit('auth/setProfile', response.data)
+        const TutoratProfileResponse = await this.$axios.patch(
+          `/api/v1/profiles/${this.userId}?populate=tutorat`,
+          { ...this.transformedProfile.tutoratProfile },
+          {
+            withCredentials: true,
+          }
+        )
+        this.$store.commit('auth/setProfile', {
+          ...TutoratProfileResponse.data,
+        })
         this.loading = false
         this.$emit('close')
       } catch (error) {

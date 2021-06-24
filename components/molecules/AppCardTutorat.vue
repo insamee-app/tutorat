@@ -1,54 +1,57 @@
 <template>
-  <InsameeCard class="border shadow-lg rounded-xl hover:shadow-xl">
+  <InsameeAppCard class="border shadow-lg rounded-xl hover:shadow-xl">
     <template #header>
-      <InsameeCardHeader>
-        <div class="grid grid-rows-2">
-          <InsameeCardTitle
-            v-if="tutoratProfile.type == 'Offre'"
-            class="text-xl text-bold"
+      <InsameeAppCardHeader>
+        <div class="flex flex-col justify-between">
+          <div
+            v-if="tutoratProfile.type == 'offre'"
+            class="text-xl font-bold truncate"
           >
-            <span class="text-primary-dark">Offre</span> |
-            {{ tutoratProfile.subject }}</InsameeCardTitle
-          >
-          <InsameeCardTitle v-else-if="tutoratProfile.type == 'Demande'">
-            <span class="text-secondary-dark">Demande</span> |
-            {{ tutoratProfile.subject }}
-          </InsameeCardTitle>
-          <div class="font-light">{{ tutoratProfile.school }}</div>
+            <span
+              :class="
+                tutoratProfile.type === 'offre'
+                  ? 'text-primary-dark'
+                  : 'text-secondary-dark'
+              "
+              >{{ capitalizeFirstLetter(tutoratProfile.type) }}</span
+            >
+            |
+            {{ capitalizeFirstLetter(tutoratProfile.subject.name) }}
+          </div>
+          <div class="font-light">{{ tutoratProfile.school.name }}</div>
         </div>
-      </InsameeCardHeader>
+      </InsameeAppCardHeader>
     </template>
 
-    <InsameeCardContent justify>
+    <InsameeAppCardContent justify>
       <div class="flex flex-row mb-6">
         <InsameeAppProfileAvatar
-          :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-          small
+          :link="tutoratProfile.profile.avatar"
+          size="small"
+          :variant="tutoratProfile.type == 'demande' ? 'secondary' : 'primary'"
           :label="tutoratProfile.currentRole"
         />
-        <div class="grid grid-rows-2 gap-0 font-bold">
-          <span>{{ tutoratProfile.creator.firstName }}</span>
-          <span>{{ tutoratProfile.creator.lastName }}</span>
+        <div class="grid items-center grid-rows-2 gap-0 ml-4 font-bold">
+          <span>{{ tutoratProfile.profile.first_name }}</span>
+          <span>{{ tutoratProfile.profile.last_name }}</span>
         </div>
       </div>
-      <span v-if="tutoratProfile.type == 'Offre'"
-        ><span class="font-bold">{{
-          minToHours(tutoratProfile.duration)
-        }}</span>
+      <span v-if="tutoratProfile.type == 'offre'"
+        ><span class="font-bold">{{ minToHours(tutoratProfile.time) }}</span>
         -
       </span>
-      {{ tutoratProfile.description }}</InsameeCardContent
+      {{ tutoratProfile.text }}</InsameeAppCardContent
     >
     <template #actions>
       <div class="flex justify-end">
         <InsameeAppButton
           :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-          :to="`/tutorat/${tutoratProfile.id}`"
+          :to="`/tutorat/${tutoratProfile.user_id}`"
           >Voir plus</InsameeAppButton
         >
       </div>
     </template>
-  </InsameeCard>
+  </InsameeAppCard>
 </template>
 
 <script>
@@ -58,22 +61,7 @@ export default {
     tutoratProfile: {
       require: true,
       type: Object,
-      default: () => {
-        return {
-          type: 'Offre',
-          school: 'INSA Centre Val de Loire',
-          duration: 60,
-          description: 'This is the text from the card',
-          creator: {
-            firstName: 'Prénom',
-            lastName: 'Nom',
-            email: 'mail@xx.fr',
-          },
-          currentRole: 'etudiant',
-          id: -1,
-          subject: 'Mathématiques "4.1',
-        }
-      },
+      default: () => {},
     },
   },
   methods: {
@@ -81,6 +69,9 @@ export default {
       const hours = Math.floor(minAmount / 60)
       const minutes = minAmount % 60
       return `${hours}h${minutes !== 0 ? minutes : ''}`
+    },
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     },
   },
 }

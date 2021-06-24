@@ -31,8 +31,9 @@ module.exports = {
     },
     extend: {
       animation: {
-        'bounce-slow': 'bounce 2s ease-in-out infinite',
+        'bounce-slow': 'bounce 1s ease-in-out infinite',
       },
     },
   },
+  plugins: [require('@tailwindcss/typography')],
 }

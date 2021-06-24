@@ -1,102 +1,109 @@
 <template>
-  <div class="static h-screen mx-4 space-y-6">
-    <div class="grid grid-rows-2">
-      <InsameeCardTitle
-        v-if="tutoratProfile.type == 'Offre'"
-        class="text-xl text-bold"
+  <InsameeAppContainer>
+    <div class="flex flex-col justify-between">
+      <div
+        v-if="tutoratInfo.type == 'offre'"
+        class="text-xl font-bold truncate"
       >
-        <span class="text-primary-dark">Offre</span> | Sujet de
-        l'offre</InsameeCardTitle
-      >
-      <InsameeCardTitle v-else-if="tutoratProfile.type == 'Demande'">
-        <span class="text-secondary-dark">Demande</span> | Sujet de la demande
-      </InsameeCardTitle>
-      <div class="font-light">{{ tutoratProfile.school }}</div>
+        <span
+          :class="
+            tutoratInfo.type === 'offre'
+              ? 'text-primary-dark'
+              : 'text-secondary-dark'
+          "
+          >{{ capitalizeFirstLetter(tutoratInfo.type) }}</span
+        >
+        |
+        {{ capitalizeFirstLetter(tutoratInfo.subject.name) }}
+      </div>
+      <div class="font-light">{{ tutoratInfo.school.name }}</div>
     </div>
-
-    <div class="flex flex-row justify-center mb-6">
+    <div class="flex flex-row justify-center my-6">
       <InsameeAppProfileAvatar
-        :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-        small
-        :label="tutoratProfile.currentRole"
+        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        size="small"
+        :label="tutoratInfo.profile.current_role"
       />
-      <div class="grid grid-rows-2 gap-0 font-bold">
-        <span>{{ tutoratProfile.creator.firstName }}</span>
-        <span>{{ tutoratProfile.creator.lastName }}</span>
+      <div class="grid items-center grid-rows-2 gap-0 ml-6 font-bold">
+        <span>{{ tutoratInfo.profile.first_name }}</span>
+        <span>{{ tutoratInfo.profile.last_name }}</span>
       </div>
     </div>
 
     <div class="pb-4 text-justify">
       <span class="font-bold"
-        >{{ tutoratProfile.creator.firstName }}
-        {{ tutoratProfile.creator.lastName }} </span
+        >{{ tutoratInfo.profile.first_name }}
+        {{ tutoratInfo.profile.last_name }} </span
       >vous propose une séance de tutorat de
-      <span class="font-bold">{{ tutoratProfile.subject }}</span> d’une durée de
-      <span class="font-bold">{{ minToHours(tutoratProfile.duration) }}</span
+      <span class="font-bold">{{ tutoratInfo.subject.name }}</span> d’une durée
+      de <span class="font-bold">{{ minToHours(tutoratInfo.time) }}</span
       >. Vous pouvez le contacter via
       <a
-        :href="`mailto:${tutoratProfile.creator.email}`"
+        :href="`mailto:toDefine@gmail.com`"
         :class="
-          tutoratProfile.type == 'Demande'
+          tutoratInfo.type == 'Demande'
             ? 'text-secondary-base'
             : 'text-primary-base'
         "
-        >{{ tutoratProfile.creator.email }}</a
+        >mailto:toDefine@gmail.com</a
       >
       ou en prenant contact sur
-      <InsameeAppLink
-        :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-        :link="`/mee/${tutoratProfile.id}`"
-        >sa page profil</InsameeAppLink
-      >.
+      <InsameeAppButton
+        empty
+        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        :to="{
+          name: 'mee-id',
+          params: {
+            id: tutoratInfo.user_id,
+          },
+        }"
+        >sa page profil</InsameeAppButton
+      >
+      .
     </div>
 
     <div class="flex justify-center">
       <InsameeAppButton
-        :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-        :to="`/mee/${tutoratProfile.id}`"
+        class="z-50"
+        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        :to="{
+          name: 'mee-id',
+          params: {
+            id: tutoratInfo.user_id,
+          },
+        }"
         >Le contacter</InsameeAppButton
       >
     </div>
 
     <div class="flex justify-center">
       <GraphicOffre
-        v-if="tutoratProfile.type == 'Offre'"
+        v-if="tutoratInfo.type == 'offre'"
         class="absolute bottom-0 w-full mx-auto"
       />
-      <GraphicDemande
-        v-else-if="tutoratProfile.type == 'Demande'"
-        class="absolute bottom-0 w-full mx-auto"
-      />
+      <GraphicDemande v-else class="absolute bottom-0 w-full mx-auto" />
     </div>
-  </div>
+  </InsameeAppContainer>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      tutoratProfile: {
-        type: 'Demande',
-        school: 'INSA Centre Val de Loire',
-        duration: 60,
-        description: 'This is the text from the card',
-        creator: {
-          firstName: 'Prénom',
-          lastName: 'Nom',
-          email: 'mail@xx.fr',
-        },
-        currentRole: 'etudiant',
-        id: -1,
-        subject: 'Mathématiques 4.1',
-      },
-    }
+  async asyncData({ $axios, params }) {
+    const tutoratInfoResponse = await $axios.get(
+      `/api/v1/tutorats/${params.id}`,
+      { withCredentials: true }
+    )
+
+    return { tutoratInfo: tutoratInfoResponse.data }
   },
   methods: {
     minToHours(minAmount) {
       const hours = Math.floor(minAmount / 60)
       const minutes = minAmount % 60
       return `${hours}h${minutes !== 0 ? minutes : ''}`
+    },
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     },
   },
 }

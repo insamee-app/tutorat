@@ -1,5 +1,5 @@
 <template>
-  <InsameeCard closable @close="$emit('close')">
+  <InsameeAppCard closable @close="$emit('close')">
     <template #header>Créer une demande / offre de tutorat</template>
     <form
       action="#"
@@ -59,7 +59,7 @@
       </div>
       <InsameeAppListError :errors="errors" full />
     </form>
-  </InsameeCard>
+  </InsameeAppCard>
 </template>
 
 <script>

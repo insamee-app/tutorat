@@ -1,7 +1,15 @@
 <template>
   <NuxtContent
     :document="content"
-    class="mx-4 prose-sm prose text-justify sm:prose lg:prose-lg xl:prose-xl"
+    class="
+      pb-4
+      mx-4
+      prose-sm prose
+      text-justify
+      sm:prose
+      lg:prose-lg
+      xl:prose-xl
+    "
   />
 </template>
 

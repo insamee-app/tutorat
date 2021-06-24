@@ -32,7 +32,11 @@ export default {
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/vuelidate.js' }],
+  plugins: [
+    { src: '~/plugins/vuelidate.js' },
+    { src: '~/plugins/v-scroll-lock.js' },
+    { src: '~/plugins/getProfile.client.js' },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: [
@@ -60,9 +64,22 @@ export default {
     '@nuxt/content',
   ],
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+
+  publicRuntimeConfig: {
+    baseInsameeUrl: 'http://localhost:3000',
+    baseApiUrl: 'http://localhost:5000',
+    axios: {
+      browserBaseURL: process.env.BROWSER_BASE_URL,
+    },
+  },
+  axios: {
+    proxy: true,
+  },
+
+  proxy: {
+    '/api/**': process.env.BROWSER_BASE_URL,
+    '/auth/**': process.env.BROWSER_BASE_URL,
+  },
 }

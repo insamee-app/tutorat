@@ -1,23 +1,23 @@
 <template>
   <div>
-    <div class="container relative h-screen">
-      <div class="px-2 pb-12 space-y-2">
-        <div class="text-4xl font-bold">
-          Besoin d'aide dans une de tes matières ?
-        </div>
-        <div class="text-sm text-grey-base">
+    <InsameeHeroBanner>
+      <template #title>
+        <InsameeHeroBannerTitle
+          >Besoin d'aide dans une de tes matières ?</InsameeHeroBannerTitle
+        >
+      </template>
+      <template #subtitle>
+        <InsameeHeroBannerSubtitle>
           Sur <span class="font-bold text-primary-light">Tutorat</span>, tu
           pourras trouver des étudiants ou des professeurs qui t’offrent leur
           aide.
-        </div>
-      </div>
-      <GraphicHeroBanner class="absolute right-0"></GraphicHeroBanner>
-      <div
-        class="absolute bottom-0 flex items-center justify-center w-full h-10"
-      >
-        <IconArrow />
-      </div>
-    </div>
+        </InsameeHeroBannerSubtitle>
+      </template>
+      <template #graphic
+        ><GraphicHeroBanner class="w-full mx-auto mt-8 h-72"></GraphicHeroBanner
+      ></template>
+    </InsameeHeroBanner>
+
     <InsameeFullContainer around>
       <InsameeFullContainerTitle class="px-4"
         >Tu as du temps libre pour proposer tes services
@@ -59,5 +59,7 @@
 </template>
 
 <script>
-export default {}
+export default {
+  created() {},
+}
 </script>

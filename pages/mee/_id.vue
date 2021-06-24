@@ -1,57 +1,48 @@
 <template>
-  <div class="grid gap-3 m-4 grid-row-5">
-    <InsameeProfileBasic
-      :profile="{}"
-      variant="secondary"
-    ></InsameeProfileBasic>
-    <InsameeLabeledItem label="Matières préférées" class="overflow-x-scroll">
-      <InsameeAppChips :texts="samplePreferedSubjects"></InsameeAppChips>
-    </InsameeLabeledItem>
-    <InsameeLabeledItem
-      label="Matières en difficulté"
-      class="overflow-x-scroll"
-    >
-      <InsameeAppChips :texts="sampleDifficultSubjects"></InsameeAppChips>
-    </InsameeLabeledItem>
-    <InsameeLabeledItem label="Description">
-      <div class="text-base text-justify">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac purus
-        erat. Mauris in fringilla orci. Duis maximus dictum urna sed interdum.
-        Pellentesque faucibus tellus risus, in tempus nunc rhoncus a. Mauris non
-        metus feugiat, mattis mauris et, dictum orci. Vivamus vitae porta metus.
-        Nulla ut fringilla justo. Aliquam lobortis gravida ligula, et pretium ex
-        euismod id. Nam ut consectetur mauris, id vestibulum elit. Aenean non
-        libero sed diam facilisis lacinia. Curabitur nec turpis consectetur est
-        condimentum convallis sit amet vitae lacus. Maecenas mattis porta tortor
-        eu elementum. Nulla rhoncus turpis felis, imperdiet convallis magna
-        viverra pretium. Quisque ac mauris semper, tempus est vel, tincidunt
-        risus. Class aptent taciti sociosqu ad litora torquent per conubia
-        nostra, per inceptos himenaeos. Vestibulum at libero eu sem rhoncus
-        gravida ut lacinia leo.
-      </div>
-    </InsameeLabeledItem>
-    <div class="flex justify-end">
-      <InsameeAppButton large :to="{ name: 'contact' }"
-        >Contacter</InsameeAppButton
-      >
-    </div>
-  </div>
+  <InsameeProfile
+    :last-name="authorProfile.last_name"
+    :first-name="authorProfile.first_name"
+    :current-role="authorProfile.current_role"
+    :graduation-year="authorProfile.graduation_year"
+    :email="authorProfile.user.email"
+    :school-name="authorProfile.school.name"
+    :socials="socials"
+    :difficulties-subjects="difficultiesSubjects"
+    :preferred-subjects="preferredSubjects"
+    :avatar-url="authorProfile.avatar"
+    :text="authorProfile.tutoratProfile.text"
+    variant="secondary"
+  ></InsameeProfile>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      samplePreferedSubjects: [
-        'Mathématiques 4.1',
-        'Algorithmie',
-        'Mathématiques 4.1',
-        'Algorithmie',
-        'Mathématiques 4.1',
-        'Algorithmie',
-      ],
-      sampleDifficultSubjects: ['SHS', 'Anglais'],
-    }
+  async asyncData({ $axios, params }) {
+    const authorProfile = await $axios.get(
+      `/api/v1/profiles/${params.id}?populate=tutorat`,
+      { withCredentials: true }
+    )
+    return { authorProfile: authorProfile.data }
+  },
+  computed: {
+    preferredSubjects() {
+      return this.authorProfile.tutoratProfile.preferredSubjects.map(
+        (subject) => subject.name
+      )
+    },
+    difficultiesSubjects() {
+      return this.authorProfile.tutoratProfile.difficultiesSubjects.map(
+        (subject) => subject.name
+      )
+    },
+    socials() {
+      return {
+        url_facebook: this.authorProfile.url_facebook,
+        url_instagram: this.authorProfile.url_instagram,
+        url_twitter: this.authorProfile.url_twitter,
+        mobile: this.authorProfile.mobile,
+      }
+    },
   },
 }
 </script>

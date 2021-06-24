@@ -1,37 +1,52 @@
 <template>
-  <div class="grid items-center grid-cols-2 p-4">
-    <span class="text-2xl font-bold text-primary-dark"
-      ><nuxt-link to="/">T</nuxt-link></span
+  <div>
+    <InsameeHeader
+      icon-nav
+      :icon-link="{ name: 'index' }"
+      @open="showSlider = true"
     >
-    <div class="flex items-center justify-end space-x-8">
-      <InsameeAppButton border large primary>S'inscrire</InsameeAppButton>
-      <IconBurger @clicked="showSlider = true" />
-    </div>
-
+      <template #actions>
+        <InsameeAppButton v-if="!loggedIn()" border large primary>
+          <InsameeAppLink :link="`${$config.baseInsameeUrl}/signin`"
+            >S'inscrire</InsameeAppLink
+          >
+        </InsameeAppButton>
+      </template>
+    </InsameeHeader>
     <InsameeNavMobile
       :value="showSlider"
       :list="[
         {
           name: 'Accueil',
-          path: '/',
+          to: { name: 'index' },
         },
         {
           name: 'Chercher un tutorat',
-          path: '/tutorat',
+          to: { name: 'tutorat' },
+        },
+        {
+          name: 'Mon profil',
+          to: { name: 'mee' },
         },
         {
           name: 'Contact',
-          path: '/contact',
+          to: { name: 'contact' },
         },
       ]"
       @close="showSlider = false"
     >
-      <template #actions>
-        <InsameeAppButton class="mr-4" primary :to="{ name: 'signin' }">
-          S'inscrire
+      <template v-if="!loggedIn()" #actions>
+        <InsameeAppButton class="mr-4">
+          <InsameeAppLink
+            class="text-white"
+            :link="`${$config.baseInsameeUrl}/signin`"
+            >S'inscrire</InsameeAppLink
+          >
         </InsameeAppButton>
-        <InsameeAppButton primary border :to="{ name: 'login' }">
-          Se connecter
+        <InsameeAppButton primary border>
+          <InsameeAppLink :link="`${$config.baseInsameeUrl}/login`"
+            >Se connecter</InsameeAppLink
+          >
         </InsameeAppButton>
       </template>
     </InsameeNavMobile>
@@ -39,12 +54,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Header',
   data() {
     return {
       showSlider: false,
     }
+  },
+  methods: {
+    ...mapGetters({ loggedIn: 'auth/loggedIn' }),
   },
 }
 </script>
