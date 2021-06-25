@@ -12,6 +12,7 @@
             v-for="(obj, index) in tutoratPosts"
             :key="index"
             :tutorat-profile="obj"
+            @refresh="$emit('refresh')"
           />
         </div>
         <div v-else class="text-2xl text-center text-primary-base">

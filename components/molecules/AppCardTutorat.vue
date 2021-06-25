@@ -3,10 +3,7 @@
     <template #header>
       <InsameeAppCardHeader>
         <div class="flex flex-col justify-between">
-          <div
-            v-if="tutoratProfile.type == 'offre'"
-            class="text-xl font-bold truncate"
-          >
+          <div class="text-xl font-bold truncate">
             <span
               :class="
                 tutoratProfile.type === 'offre'
@@ -43,18 +40,43 @@
       {{ tutoratProfile.text }}</InsameeAppCardContent
     >
     <template #actions>
-      <div class="flex justify-end">
+      <div class="flex justify-between">
         <InsameeAppButton
           :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
-          :to="`/tutorat/${tutoratProfile.user_id}`"
+          :to="{
+            name: 'tutorat-id',
+            params: {
+              id: tutoratProfile.id,
+            },
+          }"
           >Voir plus</InsameeAppButton
+        >
+        <InsameeAppButton
+          v-if="profile.user_id === tutoratProfile.user_id"
+          :variant="tutoratProfile.type == 'Demande' ? 'secondary' : 'primary'"
+          @click="toggleEdit = true"
+          >Editer</InsameeAppButton
         >
       </div>
     </template>
+    <InsameeAppModal
+      v-model="toggleEdit"
+      v-scroll-lock="toggleEdit"
+      @outside="toggleEdit = false"
+    >
+      <EditTutoratForm
+        :tutorat-text="tutoratProfile.text"
+        :tutorat-time="tutoratProfile.time"
+        :tutorat-id="tutoratProfile.id"
+        @close="toggleEdit = false"
+        @refresh="$emit('refresh')"
+      />
+    </InsameeAppModal>
   </InsameeAppCard>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'AppCardTutorat',
   props: {
@@ -63,6 +85,14 @@ export default {
       type: Object,
       default: () => {},
     },
+  },
+  data() {
+    return {
+      toggleEdit: false,
+    }
+  },
+  computed: {
+    ...mapState({ profile: (state) => state.auth.profile }),
   },
   methods: {
     minToHours(minAmount) {

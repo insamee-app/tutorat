@@ -6,7 +6,6 @@
     ></InsameeIconSpinner>
     <AppMultiSelect
       v-else
-      :value="value"
       track-by="id"
       :custom-label="format"
       :options="fetchedData"

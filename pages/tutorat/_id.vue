@@ -1,10 +1,7 @@
 <template>
   <InsameeAppContainer>
     <div class="flex flex-col justify-between">
-      <div
-        v-if="tutoratInfo.type == 'offre'"
-        class="text-xl font-bold truncate"
-      >
+      <div class="text-xl font-bold truncate">
         <span
           :class="
             tutoratInfo.type === 'offre'
@@ -20,7 +17,7 @@
     </div>
     <div class="flex flex-row justify-center my-6">
       <InsameeAppProfileAvatar
-        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        :variant="tutoratInfo.type == 'demande' ? 'secondary' : 'primary'"
         size="small"
         :label="tutoratInfo.profile.current_role"
       />
@@ -34,14 +31,17 @@
       <span class="font-bold"
         >{{ tutoratInfo.profile.first_name }}
         {{ tutoratInfo.profile.last_name }} </span
-      >vous propose une séance de tutorat de
-      <span class="font-bold">{{ tutoratInfo.subject.name }}</span> d’une durée
-      de <span class="font-bold">{{ minToHours(tutoratInfo.time) }}</span
+      >{{ tutoratInfo.type == 'offre' ? 'vous propose ' : "a besoin d'" }}une
+      séance de tutorat de
+      <span class="font-bold">{{
+        capitalizeFirstLetter(tutoratInfo.subject.name)
+      }}</span>
+      d’une durée de <span class="font-bold">{{ formatedHour }}</span
       >. Vous pouvez le contacter via
       <a
         :href="`mailto:toDefine@gmail.com`"
         :class="
-          tutoratInfo.type == 'Demande'
+          tutoratInfo.type == 'demande'
             ? 'text-secondary-base'
             : 'text-primary-base'
         "
@@ -50,7 +50,7 @@
       ou en prenant contact sur
       <InsameeAppButton
         empty
-        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        :variant="tutoratInfo.type == 'demande' ? 'secondary' : 'primary'"
         :to="{
           name: 'mee-id',
           params: {
@@ -62,10 +62,10 @@
       .
     </div>
 
-    <div class="flex justify-center">
+    <div class="flex justify-evenly">
       <InsameeAppButton
-        class="z-50"
-        :variant="tutoratInfo.type == 'Demande' ? 'secondary' : 'primary'"
+        class="z-2"
+        :variant="tutoratInfo.type == 'demande' ? 'secondary' : 'primary'"
         :to="{
           name: 'mee-id',
           params: {
@@ -73,6 +73,17 @@
           },
         }"
         >Le contacter</InsameeAppButton
+      >
+      <InsameeAppButton
+        v-if="profile.user_id === tutoratInfo.user_id"
+        :variant="tutoratInfo.type == 'demande' ? 'secondary' : 'primary'"
+        @click="toggleEdit = true"
+        >Editer</InsameeAppButton
+      >
+      <InsameeAppButton
+        v-if="profile.user_id === tutoratInfo.user_id"
+        @click="deleteTutorat"
+        >Supprimer</InsameeAppButton
       >
     </div>
 
@@ -83,11 +94,27 @@
       />
       <GraphicDemande v-else class="absolute bottom-0 w-full mx-auto" />
     </div>
+    <InsameeAppModal
+      v-model="toggleEdit"
+      v-scroll-lock="toggleEdit"
+      @outside="toggleEdit = false"
+    >
+      <EditTutoratForm
+        class="z-10"
+        :tutorat-text="tutoratInfo.text"
+        :tutorat-time="tutoratInfo.time"
+        :tutorat-id="tutoratInfo.id"
+        @close="toggleEdit = false"
+        @refresh="reFetchData"
+      />
+    </InsameeAppModal>
   </InsameeAppContainer>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
+  middleware: 'authenticated',
   async asyncData({ $axios, params }) {
     const tutoratInfoResponse = await $axios.get(
       `/api/v1/tutorats/${params.id}`,
@@ -95,6 +122,17 @@ export default {
     )
 
     return { tutoratInfo: tutoratInfoResponse.data }
+  },
+  data() {
+    return {
+      toggleEdit: false,
+    }
+  },
+  computed: {
+    ...mapState({ profile: (state) => state.auth.profile }),
+    formatedHour() {
+      return this.minToHours(this.tutoratInfo.time)
+    },
   },
   methods: {
     minToHours(minAmount) {
@@ -104,6 +142,21 @@ export default {
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    async reFetchData() {
+      const tutoratInfoResponse = await this.$axios.get(
+        `/api/v1/tutorats/${this.tutoratInfo.id}`,
+        { withCredentials: true }
+      )
+      this.tutoratInfo = tutoratInfoResponse.data
+    },
+    async deleteTutorat() {
+      await this.$axios.delete(`/api/v1/tutorats/${this.tutoratInfo.id}`, {
+        withCredentials: true,
+      })
+      this.$router.push({
+        path: '/mee',
+      })
     },
   },
 }

@@ -14,8 +14,8 @@
 
 <script>
 export default {
+  middleware: ['alreadyAuthenticated'],
   beforeEnter({ $config }) {
-    console.log('zebipa')
     window.location.href = `${$config.baseInsameeUrl}/login`
   },
 }

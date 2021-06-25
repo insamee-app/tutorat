@@ -6,13 +6,13 @@
     ></InsameeIconSpinner>
     <AppSelect
       v-else
-      v-model="selected"
+      :value="value"
       :name="name"
       :items="fetchedData"
       :label="label"
       choose-text
       class="w-full"
-      @input="$emit('input', $event)"
+      @input="handleSelect"
     >
       <template #option="{ item }">
         <slot name="option" :item="item"></slot>
@@ -28,6 +28,10 @@ export default {
   name: 'FetchSelect',
   mixins: [fetchData],
   props: {
+    value: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -50,6 +54,11 @@ export default {
         const newValue = value === '' ? undefined : value
         this.$emit('selected', this.name, newValue)
       },
+    },
+  },
+  methods: {
+    handleSelect(value) {
+      this.$emit('input', this.name, value)
     },
   },
 }

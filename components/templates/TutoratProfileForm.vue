@@ -69,7 +69,7 @@ import { numeric, between, maxLength, url } from 'vuelidate/lib/validators'
 const date = new Date()
 
 export default {
-  name: 'UserProfileForm',
+  name: '',
   props: {
     userId: {
       type: Number,

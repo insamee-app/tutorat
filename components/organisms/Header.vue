@@ -11,6 +11,9 @@
             >S'inscrire</InsameeAppLink
           >
         </InsameeAppButton>
+        <InsameeAppButton v-if="loggedIn()" @click="toggleCreaForm = true">
+          Créer un tutorat
+        </InsameeAppButton>
       </template>
     </InsameeHeader>
     <InsameeNavMobile
@@ -50,6 +53,13 @@
         </InsameeAppButton>
       </template>
     </InsameeNavMobile>
+    <InsameeAppModal
+      v-model="toggleCreaForm"
+      v-scroll-lock="toggleCreaForm"
+      @outside="toggleCreaForm = false"
+    >
+      <AppNewTutoratForm @close="toggleCreaForm = false" />
+    </InsameeAppModal>
   </div>
 </template>
 
@@ -61,6 +71,7 @@ export default {
   data() {
     return {
       showSlider: false,
+      toggleCreaForm: false,
     }
   },
   methods: {

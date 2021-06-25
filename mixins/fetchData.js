@@ -20,7 +20,6 @@ export default {
         withCredentials: true,
       })
       this.fetchedData = data
-      console.log(this.fetchedData)
       this.$store.commit(`data/set${pascalCase(this.ressource)}`, data)
     }
   },

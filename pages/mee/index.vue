@@ -39,10 +39,10 @@
       <InsameeLabeledItem label="Mes offres et demandes">
         <div class="flex flex-row w-full pt-4 justify-evenly">
           <InsameeAppButton large @click="showCards = 'offre'"
-            >Offre</InsameeAppButton
+            >Offres</InsameeAppButton
           >
           <InsameeAppButton large @click="showCards = 'demande'"
-            >Demande</InsameeAppButton
+            >Demandes</InsameeAppButton
           >
         </div>
       </InsameeLabeledItem>
@@ -75,9 +75,11 @@
       @outside="showCards = undefined"
     >
       <AppCardTutoratList
+        class="w-72"
         :tutorat-posts="filteredTutoratPosts"
         :type="showCards"
         @close="showCards = undefined"
+        @refresh="refetchData"
       />
     </InsameeAppModal>
   </div>
@@ -87,18 +89,7 @@
 import { mapGetters, mapState } from 'vuex'
 
 export default {
-  middleware: ['authenticated'],
-  async asyncData({ store, $axios }) {
-    const tutoratPosts = await $axios.get(`/api/v1/tutorats`, {
-      withCredentials: true,
-    })
-    store.commit(
-      'data/setUserTutoratPosts',
-      tutoratPosts.data.filter(
-        (tutorat) => tutorat.user_id === store.state.auth.profile.user_id
-      )
-    )
-  },
+  middleware: 'authenticated',
   data() {
     return {
       toggleEditProfile: false,
@@ -121,7 +112,6 @@ export default {
       return !!this.showCards
     },
     filteredTutoratPosts() {
-      console.log('got : ', this.tutoratPosts)
       return this.showCards !== undefined
         ? this.tutoratPosts?.filter(
             (tutorat) => tutorat.type === this.showCards
@@ -143,9 +133,24 @@ export default {
     //   )
     // },
   },
+  async mounted() {
+    await this.refetchData()
+  },
   methods: {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    async refetchData() {
+      const tutoratPosts = await this.$axios.get(`/api/v1/tutorats`, {
+        withCredentials: true,
+      })
+      this.$store.commit(
+        'data/setUserTutoratPosts',
+        tutoratPosts.data.filter(
+          (tutorat) =>
+            tutorat.user_id === this.$store.state.auth.profile.user_id
+        )
+      )
     },
   },
 }

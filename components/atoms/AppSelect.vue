@@ -5,14 +5,14 @@
       :id="name"
       :name="name"
       class="
-        pr-2
+        p-3
         border
         rounded-md
         border-primary-dark
         bg-grey-light
         form-select
       "
-      @input="$emit('input', $event.target.value)"
+      @input="emitValues"
     >
       <option
         v-for="item in selectItems"
@@ -66,6 +66,10 @@ export default {
   methods: {
     isSelected(id, value) {
       return String(id) === String(value)
+    },
+    emitValues(event) {
+      this.$emit('input', event.target.value)
+      this.$emit('selected', this.name, event.target.value)
     },
   },
 }

@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  middleware: 'authenticated',
   async asyncData({ $axios, params }) {
     const authorProfile = await $axios.get(
       `/api/v1/profiles/${params.id}?populate=tutorat`,

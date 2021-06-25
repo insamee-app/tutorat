@@ -1,25 +1,38 @@
 export const state = () => ({
-  users: {
+  tutoratsQuery: {
     limit: '5',
     page: 1,
-    currentRole: undefined,
     type: undefined,
+    subject: undefined,
+    currentRole: undefined,
     school: undefined,
+    duration: undefined,
   },
 })
 
 export const mutations = {
-  setUsersFilter(state, { name, value }) {
+  setTutoratsFilter(state, { name, value }) {
     // Avoid unwanted value from url
-    if (Object.keys(state.users).includes(name)) state.users[name] = value
+    if (Object.keys(state.tutoratsQuery).includes(name))
+      state.tutoratsQuery[name] = value
+  },
+  resetTutoratFilter(state) {
+    state.tutoratsQuery = {
+      limit: '5',
+      page: 1,
+      type: undefined,
+      subject: undefined,
+      currentRole: undefined,
+      school: undefined,
+      duration: undefined,
+    }
   },
 }
-
 export const getters = {
-  getUsersSearchParams({ users }) {
+  getUsersSearchParams({ tutoratsQuery }) {
     const data = {}
-    for (const property in users) {
-      if (users[property]) data[property] = users[property]
+    for (const property in tutoratsQuery) {
+      if (tutoratsQuery[property]) data[property] = tutoratsQuery[property]
     }
     const searchParams = new URLSearchParams(data)
     return searchParams.toString()
