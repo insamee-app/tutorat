@@ -64,16 +64,7 @@ export default {
     '@nuxt/content',
   ],
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
-
-  publicRuntimeConfig: {
-    baseInsameeUrl: 'http://localhost:3000',
-    baseApiUrl: 'http://localhost:5000',
-    axios: {
-      browserBaseURL: process.env.BROWSER_BASE_URL,
-    },
-  },
+  // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     proxy: true,
   },
@@ -81,5 +72,13 @@ export default {
   proxy: {
     '/api/**': process.env.BROWSER_BASE_URL,
     '/auth/**': process.env.BROWSER_BASE_URL,
+  },
+
+  // Build Configuration: https://go.nuxtjs.dev/config-build
+  build: {},
+
+  publicRuntimeConfig: {
+    insameeURL: process.env.INSAMEE_URL,
+    associationsURL: process.env.ASSOCIATION_URL,
   },
 }
