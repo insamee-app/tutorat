@@ -19,18 +19,84 @@
       >
         <InsameeProfileContact :links="socials" />
         <InsameeLabeledItem label="Mes demandes et mes offres">
-          <div class="flex flex-row w-full pt-4 justify-evenly">
-            <InsameeAppButton
-              large
-              variant="secondary"
-              @click="showCards = 'demande'"
-            >
-              Demandes
-            </InsameeAppButton>
-            <InsameeAppButton large @click="showCards = 'offre'">
-              Offres
-            </InsameeAppButton>
-          </div>
+          <section class="space-y-4">
+            <div class="flex flex-row w-full pt-4 justify-evenly">
+              <InsameeAppButton
+                large
+                :disabled="loading"
+                :loading="loading"
+                variant="secondary"
+                @click="toShow = 'demande'"
+              >
+                Demandes
+              </InsameeAppButton>
+              <InsameeAppButton
+                large
+                :disabled="loading"
+                :loading="loading"
+                @click="toShow = 'offre'"
+              >
+                Offres
+              </InsameeAppButton>
+            </div>
+            <InsameeResponsiveListCards v-if="toShow">
+              <template v-if="loading">
+                <InsameeSkeletonCard v-for="value in limit" :key="value" />
+              </template>
+              <template v-else-if="pagination && pagination.total">
+                <template v-if="tutorats.length">
+                  <TutoratCard
+                    v-for="tutorat in tutorats"
+                    :id="tutorat.id"
+                    :key="tutorat.id"
+                    :subject-name="tutorat.subject.name"
+                    :school-name="tutorat.school.name"
+                    :avatar-url="tutorat.profile.avatarUrl"
+                    :type="tutorat.type"
+                    :text="tutorat.text"
+                    :time="tutorat.time"
+                    :first-name="tutorat.profile.first_name"
+                    :last-name="tutorat.profile.last_name"
+                    :current-role="tutorat.profile.current_role"
+                    :user-id="$store.state.auth.profile.user_id"
+                    :owner-id="tutorat.profile.user_id"
+                  />
+                </template>
+                <template v-else>
+                  <div class="text-center text-lg col-span-2">
+                    Il semble que vous ne soyez pas sur la bonne page
+                  </div>
+                </template>
+              </template>
+              <template v-else>
+                <div class="text-center text-lg col-span-2">
+                  Il n'existe pas de tutorats pour votre recherche !
+                </div>
+              </template>
+              <template v-if="pagination && pagination.total" #pagination>
+                <InsameeResponsiveListPagination>
+                  <InsameePagination
+                    v-if="!loading"
+                    :small="mdAndDown"
+                    :previous-page="
+                      pagination.previous_page_url
+                        ? pagination.current_page - 1
+                        : undefined
+                    "
+                    :next-page="
+                      pagination.next_page_url
+                        ? pagination.current_page + 1
+                        : undefined
+                    "
+                    :first-page="pagination.first_page"
+                    :current-page="pagination.current_page"
+                    :last-page="pagination.last_page"
+                    @pagination="refresh"
+                  />
+                </InsameeResponsiveListPagination>
+              </template>
+            </InsameeResponsiveListCards>
+          </section>
         </InsameeLabeledItem>
       </InsameeTutoratProfile>
       <section class="flex justify-between sticky bottom-4 mt-8">
@@ -82,6 +148,12 @@ export default {
   middleware: 'authenticated',
   data() {
     return {
+      loading: false,
+      pagination: undefined,
+      limit: 6,
+      page: 1,
+      toShow: undefined,
+      tutorats: [],
       createTutorat: false,
       editProfile: false,
       errors: [],
@@ -90,33 +162,36 @@ export default {
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
     ...mapGetters({ socials: 'auth/socialNetworks' }),
-    cardsModalOpen() {
-      return !!this.showCards
+    mdAndDown() {
+      return !this.$screen.lg
     },
-    // preferredSubjects() {
-    //   return (
-    //     this.profile.tutoratProfile?.preferredSubjects ?? [
-    //       { name: 'Non reseignées' },
-    //     ]
-    //   )
-    // },
-    // difficultiesSubjects() {
-    //   return (
-    //     this.profile.tutoratProfile?.difficultiesSubjects ?? [
-    //       { name: 'Non renseignées' },
-    //     ]
-    //   )
-    // },
+    lgAndUp() {
+      return this.$screen.lg
+    },
+  },
+  watch: {
+    toShow() {
+      this.fetch()
+    },
   },
   methods: {
-    async refetchData() {
-      // Il faut placer ça dans un composant pour que ça soit fetch que au v-if et on le met dans le store pour faire comme dans insamee
-      // const tutoratPosts = await this.$axios.get(
-      //   `/api/v1/profiles/${id}/tutorats`,
-      //   {
-      //     withCredentials: true,
-      //   }
-      // )
+    async refresh(value) {
+      this.page = value
+      await this.fetch()
+    },
+    async fetch() {
+      this.loading = true
+      try {
+        const response = await this.$axios.get(
+          `/api/v1/profiles/${this.profile.user_id}/tutorats?type=${this.toShow}&limit=${this.limit}&page=${this.page}`
+        )
+
+        this.tutorats = response.data.data
+        this.pagination = response.data.meta
+      } catch (error) {
+        console.log(error)
+      }
+      this.loading = false
     },
   },
 }
