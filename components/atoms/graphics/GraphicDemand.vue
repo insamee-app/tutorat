@@ -256,6 +256,6 @@
 
 <script>
 export default {
-  name: 'GraphicDemande',
+  name: 'GraphicDemand',
 }
 </script>

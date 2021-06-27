@@ -9,36 +9,20 @@
   >
     <template #header>
       <InsameeAppCardHeader>
-        <div class="flex flex-col justify-between">
-          <div class="text-xl font-bold truncate">
-            <span
-              class="uppercase"
-              :class="
-                isDemand(type) ? 'text-secondary-base' : 'text-primary-base'
-              "
-            >
-              {{ type }}
-            </span>
-            |
-            <span class="capitalize"> {{ subjectName }} </span>
-          </div>
-          <div class="font-light">{{ schoolName }}</div>
-        </div>
+        <AppTutoratHeader
+          :type="type"
+          :school-name="schoolName"
+          :subject-name="subjectName"
+        />
       </InsameeAppCardHeader>
     </template>
     <InsameeAppCardContent justify>
-      <div class="flex flex-row mb-6">
-        <InsameeAppProfileAvatar
-          :link="avatarUrl"
-          size="small"
-          :variant="isDemand(type) ? 'secondary' : 'primary'"
-          :label="currentRole"
-        />
-        <div class="flex flex-col ml-6 font-bold">
-          <span>{{ firstName }}</span>
-          <span>{{ lastName }}</span>
-        </div>
-      </div>
+      <AppTutoratAvatar
+        :type="type"
+        :current-role="currentRole"
+        :last-name="lastName"
+        :first-name="firstName"
+      />
       <template v-if="isOffer(type)">
         <span class="font-bold">{{ time }}</span>
         -
@@ -46,17 +30,7 @@
       {{ text | cutText }}</InsameeAppCardContent
     >
     <template #actions>
-      <div
-        class="flex"
-        :class="ownerId === userId ? 'justify-between' : 'justify-end'"
-      >
-        <InsameeAppButton
-          v-if="ownerId === userId"
-          :variant="isDemand(type) ? 'secondary' : 'primary'"
-          @click="$emit('edit', id)"
-        >
-          Editer
-        </InsameeAppButton>
+      <div class="flex justify-end">
         <InsameeAppButton :variant="isDemand(type) ? 'secondary' : 'primary'">
           Voir plus
         </InsameeAppButton>

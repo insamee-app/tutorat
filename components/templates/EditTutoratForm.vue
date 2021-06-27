@@ -2,7 +2,16 @@
   <InsameeAppCard>
     <template #header>
       <InsameeAppCardHeader closable @close="$emit('close')">
-        <InsameeAppCardTitle>Editer une offre/demande</InsameeAppCardTitle>
+        <InsameeAppCardTitle>
+          <span>
+            Éditer une
+            <span
+              class="uppercase"
+              :class="isOffer ? 'text-primary-base' : 'text-secondary-base'"
+              >{{ type }}
+            </span>
+          </span>
+        </InsameeAppCardTitle>
       </InsameeAppCardHeader>
     </template>
     <form
@@ -11,14 +20,15 @@
       @submit.prevent="editTutorat"
     >
       <InsameeLabeledTextarea
-        v-model="$v.fieldsProfile.text.$model"
+        v-model="$v.fieldsTutorat.text.$model"
         name="description"
         placeholder="Description"
         :error-message="textMessage"
         label="Description du tutorat"
       />
       <AppSelect
-        v-model="$v.fieldsProfile.time.$model"
+        v-if="isOffer"
+        v-model="$v.fieldsTutorat.time.$model"
         name="time"
         :items="timeOptions"
         label="Durée du tutorat (minutes)"
@@ -47,16 +57,28 @@ import { between, maxLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'EditTutoratForm',
+  validations: {
+    fieldsTutorat: {
+      text: {
+        maxLength: maxLength(2048),
+      },
+      time: {
+        between: between(30, 180),
+      },
+    },
+  },
   props: {
-    tutoratText: {
+    type: {
       type: String,
       required: true,
+    },
+    tutoratText: {
+      type: String,
       default: '',
     },
     tutoratTime: {
       type: Number,
       required: true,
-      default: 30,
     },
     tutoratId: {
       type: Number,
@@ -67,23 +89,16 @@ export default {
     return {
       errors: [],
       loading: false,
-      fieldsProfile: {
-        text: this.tutoratText,
-        time: this.tutoratTime,
+      fieldsTutorat: {
+        text: '',
+        time: '',
       },
     }
   },
-  validations: {
-    fieldsProfile: {
-      text: {
-        maxLength: maxLength(2048),
-      },
-      time: {
-        between: between(30, 180),
-      },
-    },
-  },
   computed: {
+    isOffer() {
+      return this.type === 'offre'
+    },
     timeOptions() {
       const timeRange = []
       for (let i = 0; i < 180 / 30; i++) {
@@ -92,43 +107,42 @@ export default {
       return timeRange
     },
     textMessage() {
-      if (!this.$v.fieldsProfile.text.$dirty) return ''
+      if (!this.$v.fieldsTutorat.text.$dirty) return ''
 
-      if (!this.$v.fieldsProfile.text.maxLength)
+      if (!this.$v.fieldsTutorat.text.maxLength)
         return 'Votre présentation est trop longue'
 
       return ''
     },
     timeMessage() {
-      if (!this.$v.fieldsProfile.time.$dirty) return ''
+      if (!this.$v.fieldsTutorat.time.$dirty) return ''
 
-      if (!this.$v.fieldsProfile.time.maxLength)
+      if (!this.$v.fieldsTutorat.time.maxLength)
         return 'La durée doit être comprise entre 30 minutes et 180 minutes'
 
       return ''
     },
   },
+  mounted() {
+    this.fieldsTutorat.text = this.tutoratText ?? ''
+    this.fieldsTutorat.time = String(this.tutoratTime)
+  },
   methods: {
     async editTutorat() {
       this.loading = true
       try {
-        await this.$axios.patch(
+        const response = await this.$axios.patch(
           `/api/v1/tutorats/${this.tutoratId}`,
           {
-            text: this.fieldsProfile.text,
-            time: Number(this.fieldsProfile.time),
-          },
-          {
-            withCredentials: true,
+            text: this.fieldsTutorat.text,
+            time: Number(this.fieldsTutorat.time),
           }
         )
-        this.loading = false
-        this.$emit('refresh')
-        this.$emit('close')
+        this.$emit('refresh', response.data)
       } catch (error) {
-        this.loading = false
         this.errors = error.response.data.errors
       }
+      this.loading = false
     },
   },
 }
