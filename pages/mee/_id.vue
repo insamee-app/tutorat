@@ -1,51 +1,47 @@
 <template>
-  <InsameeProfile
-    :last-name="authorProfile.last_name"
-    :first-name="authorProfile.first_name"
-    :current-role="authorProfile.current_role"
-    :graduation-year="authorProfile.graduation_year"
-    :email="authorProfile.user.email"
-    :school-name="authorProfile.school.name"
+  <InsameeMeeTutoratProfile
+    :last-name="profile.last_name"
+    :first-name="profile.first_name"
+    :current-role="profile.current_role"
+    :graduation-year="profile.graduation_year"
+    :email="profile.user.email"
+    :school-name="profile.school.name"
     :socials="socials"
-    :difficulties-subjects="difficultiesSubjects"
-    :preferred-subjects="preferredSubjects"
-    :avatar-url="authorProfile.avatar"
-    :text="authorProfile.tutoratProfile.text"
+    :difficulties-subjects="
+      getTexts(profile.tutoratProfile.difficultiesSubjects)
+    "
+    :preferred-subjects="getTexts(profile.tutoratProfile.preferredSubjects)"
+    :avatar-url="profile.avatar"
+    :text="profile.tutoratProfile.text"
     variant="secondary"
-  ></InsameeProfile>
+  />
 </template>
 
 <script>
+import getTexts from '@/mixins/getTexts'
+
 export default {
+  mixins: [getTexts],
   middleware: 'authenticated',
-  async asyncData({ $axios, params }) {
-    const authorProfile = await $axios.get(
-      `/api/v1/profiles/${params.id}?populate=tutorat`,
-      { withCredentials: true }
-    )
-    return { authorProfile: authorProfile.data }
+  async asyncData({ params, $axios }) {
+    const path = '/api/v1/profiles'
+    const { id } = params
+
+    const { data: profile } = await $axios.get(`${path}/${id}?populate=tutorat`)
+
+    return {
+      profile,
+    }
   },
   computed: {
-    preferredSubjects() {
-      return this.authorProfile.tutoratProfile.preferredSubjects.map(
-        (subject) => subject.name
-      )
-    },
-    difficultiesSubjects() {
-      return this.authorProfile.tutoratProfile.difficultiesSubjects.map(
-        (subject) => subject.name
-      )
-    },
     socials() {
       return {
-        url_facebook: this.authorProfile.url_facebook,
-        url_instagram: this.authorProfile.url_instagram,
-        url_twitter: this.authorProfile.url_twitter,
-        mobile: this.authorProfile.mobile,
+        facebook: this.profile.url_facebook,
+        instagram: this.profile.url_instagram,
+        twitter: this.profile.url_twitter,
+        téléphone: this.profile.mobile,
       }
     },
   },
 }
 </script>
-
-<style></style>
