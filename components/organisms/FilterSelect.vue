@@ -27,10 +27,6 @@ export default {
   name: 'FilterSelect',
   mixins: [fetchData],
   props: {
-    value: {
-      type: String,
-      default: undefined,
-    },
     name: {
       type: String,
       required: true,
@@ -47,12 +43,12 @@ export default {
   computed: {
     selected: {
       get() {
-        const value = this.value
+        const value = this.$store.state.filters.tutorats[this.name]
         return value === undefined ? '' : value
       },
       set(value) {
         const newValue = value === '' ? undefined : value
-        this.$emit('input', newValue)
+        this.$emit('selected', this.name, newValue)
       },
     },
   },

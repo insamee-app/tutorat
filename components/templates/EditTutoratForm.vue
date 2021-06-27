@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { between, maxLength } from 'vuelidate/lib/validators'
+import { between, maxLength, requiredIf } from 'vuelidate/lib/validators'
 
 export default {
   name: 'EditTutoratForm',
@@ -63,6 +63,9 @@ export default {
         maxLength: maxLength(2048),
       },
       time: {
+        required: requiredIf(function () {
+          return this.isOffer
+        }),
         between: between(30, 180),
       },
     },
@@ -78,7 +81,7 @@ export default {
     },
     tutoratTime: {
       type: Number,
-      required: true,
+      default: 0,
     },
     tutoratId: {
       type: Number,
@@ -125,7 +128,7 @@ export default {
   },
   mounted() {
     this.fieldsTutorat.text = this.tutoratText ?? ''
-    this.fieldsTutorat.time = String(this.tutoratTime)
+    this.fieldsTutorat.time = String(this.tutoratTime ?? '')
   },
   methods: {
     async editTutorat() {
@@ -135,7 +138,7 @@ export default {
           `/api/v1/tutorats/${this.tutoratId}`,
           {
             text: this.fieldsTutorat.text,
-            time: Number(this.fieldsTutorat.time),
+            time: Number(this.fieldsTutorat.time) || undefined,
           }
         )
         this.$emit('refresh', response.data)

@@ -33,7 +33,10 @@
           </div>
         </InsameeLabeledItem>
       </InsameeTutoratProfile>
-      <section class="flex justify-end sticky bottom-4 mt-8">
+      <section class="flex justify-between sticky bottom-4 mt-8">
+        <InsameeAppButton large @click="createTutorat = true">
+          Créer un tutorat
+        </InsameeAppButton>
         <InsameeAppButton large @click="editProfile = true">
           Editer le profil
         </InsameeAppButton>
@@ -59,19 +62,14 @@
         @close="editProfile = false"
       />
     </InsameeAppModal>
-    <!-- <InsameeAppModal
-      v-model="cardsModalOpen"
-      v-scroll-lock="cardsModalOpen"
-      @outside="showCards = undefined"
+    <InsameeAppModal
+      v-slot="{ size }"
+      v-model="createTutorat"
+      v-scroll-lock="createTutorat"
+      @outside="createTutorat = false"
     >
-      <AppCardTutoratList
-        class="w-72"
-        :tutorat-posts="filteredTutoratPosts"
-        :type="showCards"
-        @close="showCards = undefined"
-        @refresh="refetchData"
-      />
-    </InsameeAppModal> -->
+      <CreateTutoratForm :class="size" @close="createTutorat = false" />
+    </InsameeAppModal>
   </div>
 </template>
 
@@ -84,8 +82,8 @@ export default {
   middleware: 'authenticated',
   data() {
     return {
+      createTutorat: false,
       editProfile: false,
-      showCards: undefined,
       errors: [],
     }
   },
@@ -111,15 +109,15 @@ export default {
     // },
   },
   methods: {
-    // async refetchData() {
-    //   // Il faut placer ça dans un composant pour que ça soit fetch que au v-if et on le met dans le store pour faire comme dans insamee
-    //   const tutoratPosts = await this.$axios.get(
-    //     `/api/v1/profiles/${id}/tutorats`,
-    //     {
-    //       withCredentials: true,
-    //     }
-    //   )
-    // },
+    async refetchData() {
+      // Il faut placer ça dans un composant pour que ça soit fetch que au v-if et on le met dans le store pour faire comme dans insamee
+      // const tutoratPosts = await this.$axios.get(
+      //   `/api/v1/profiles/${id}/tutorats`,
+      //   {
+      //     withCredentials: true,
+      //   }
+      // )
+    },
   },
 }
 </script>

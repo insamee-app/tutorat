@@ -2,7 +2,7 @@
   <InsameeAppCard>
     <template #header>
       <InsameeAppCardHeader closable @close="$emit('close')">
-        <InsameeAppCardTitle>Modifier mon profil</InsameeAppCardTitle>
+        <InsameeAppCardTitle>Créer un tutorat</InsameeAppCardTitle>
       </InsameeAppCardHeader>
     </template>
     <form
@@ -11,36 +11,34 @@
       @submit.prevent="createTutorat"
     >
       <AppSelect
-        v-model="$v.fieldsProfile.type.$model"
+        v-model="$v.fieldsTutorat.type.$model"
         name="type"
         :items="tutoratTypes"
         label="Type de tutorat"
         choose-text
       />
       <FetchSelect
-        v-model="$v.fieldsProfile.subject.$model"
+        v-model="fieldsTutorat.subject"
         name="subject"
         ressource="subjects"
-        label="Matière"
-        @input="handleSelect"
+        label="Matière du tutorat"
       />
       <FetchSelect
-        v-model="$v.fieldsProfile.school.$model"
+        v-model="fieldsTutorat.school"
         ressource="schools"
         name="school"
-        label="Ecole"
-        @input="handleSelect"
+        label="École"
       />
       <InsameeLabeledTextarea
-        v-model="$v.fieldsProfile.text.$model"
+        v-model="$v.fieldsTutorat.text.$model"
         name="description"
         placeholder="Description"
         :error-message="textMessage"
         label="Votre description de tuteur"
       />
       <AppSelect
-        v-if="fieldsProfile.type === 'offre'"
-        v-model="$v.fieldsProfile.time.$model"
+        v-if="fieldsTutorat.type === 'offre'"
+        v-model="$v.fieldsTutorat.time.$model"
         name="time"
         :items="timeOptions"
         label="Durée du tutorat (minutes)"
@@ -54,7 +52,7 @@
         <InsameeAppButton
           type="submit"
           :loading="loading"
-          :disabled="$v.$invalid"
+          :disabled="$v.$invalid || loading"
         >
           Enregistrer
         </InsameeAppButton>
@@ -74,7 +72,7 @@ export default {
     return {
       errors: [],
       loading: false,
-      fieldsProfile: {
+      fieldsTutorat: {
         type: '',
         school: '',
         subject: '',
@@ -84,7 +82,7 @@ export default {
     }
   },
   validations: {
-    fieldsProfile: {
+    fieldsTutorat: {
       text: {
         maxLength: maxLength(2048),
       },
@@ -102,17 +100,17 @@ export default {
       tutoratTypes: (state) => state.data.tutoratTypes,
     }),
     textMessage() {
-      if (!this.$v.fieldsProfile.text.$dirty) return ''
+      if (!this.$v.fieldsTutorat.text.$dirty) return ''
 
-      if (!this.$v.fieldsProfile.text.maxLength)
+      if (!this.$v.fieldsTutorat.text.maxLength)
         return 'Votre présentation est trop longue'
 
       return ''
     },
     timeMessage() {
-      if (!this.$v.fieldsProfile.time.$dirty) return ''
+      if (!this.$v.fieldsTutorat.time.$dirty) return ''
 
-      if (!this.$v.fieldsProfile.time.maxLength)
+      if (!this.$v.fieldsTutorat.time.maxLength)
         return 'La durée doit être comprise entre 30 minutes et 180 minutes'
 
       return ''
@@ -129,20 +127,15 @@ export default {
     async createTutorat() {
       this.loading = true
       try {
-        console.log('Submitted : ', this.fieldsProfile)
-        await this.$axios.post(`/api/v1/tutorats`, this.fieldsProfile, {
-          withCredentials: true,
-        })
-        this.loading = false
+        await this.$axios.post(`/api/v1/tutorats`, this.fieldsTutorat)
         this.$emit('close')
       } catch (error) {
-        this.loading = false
         this.errors = error.response.data.errors
       }
+      this.loading = false
     },
     handleSelect(name, value) {
-      console.log('recv : ', name, value)
-      this.fieldsProfile[name] = value
+      this.fieldsTutorat[name] = value
     },
   },
 }
