@@ -1,11 +1,15 @@
 <template>
-  <InsameeContact mail="randomMail@fake.com"
-    ><GraphicContact class="w-full mt-8"
-  /></InsameeContact>
+  <InsameeContact :mail="mail">
+    <GraphicMail class="w-full" />
+  </InsameeContact>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      mail: 'mailto:',
+    }
+  },
+}
 </script>
-
-<style></style>
