@@ -112,5 +112,3 @@ export default {
   name: 'GraphicContact',
 }
 </script>
-
-<style></style>

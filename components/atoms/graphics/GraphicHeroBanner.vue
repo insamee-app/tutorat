@@ -144,5 +144,3 @@ export default {
   name: 'GraphicHeroBanner',
 }
 </script>
-
-<style></style>

@@ -259,5 +259,3 @@ export default {
   name: 'GraphicDemande',
 }
 </script>
-
-<style></style>

@@ -256,8 +256,6 @@
 
 <script>
 export default {
-  name: 'GraphicOffre',
+  name: 'GraphicMail',
 }
 </script>
-
-<style></style>

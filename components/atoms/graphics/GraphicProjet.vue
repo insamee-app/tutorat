@@ -120,5 +120,3 @@ export default {
   name: 'GraphicProjet',
 }
 </script>
-
-<style></style>

@@ -503,5 +503,3 @@ export default {
   name: 'GraphicTutorat',
 }
 </script>
-
-<style></style>
