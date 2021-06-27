@@ -2,17 +2,16 @@
   <div class="flex flex-col items-center">
     <InsameeIconSpinner
       v-if="$fetchState.pending"
-      class="w-6 h-6 my-4 fill-current animate-spin text-primary-dark"
+      class="animate-spin text-primary-dark fill-current h-6 w-6 my-4"
     ></InsameeIconSpinner>
     <AppSelect
       v-else
-      :value="value"
+      v-model="selected"
+      class="w-full"
       :name="name"
       :items="fetchedData"
       :label="label"
       choose-text
-      class="w-full"
-      @input="handleSelect"
     >
       <template #option="{ item }">
         <slot name="option" :item="item"></slot>
@@ -25,13 +24,9 @@
 import fetchData from '~/mixins/fetchData'
 
 export default {
-  name: 'FetchSelect',
+  name: 'FilterSelect',
   mixins: [fetchData],
   props: {
-    value: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: true,
@@ -47,18 +42,14 @@ export default {
   },
   computed: {
     selected: {
-      get(value) {
-        return value
+      get() {
+        const value = this.$store.state.filters.tutorats[this.name]
+        return value === undefined ? '' : value
       },
       set(value) {
         const newValue = value === '' ? undefined : value
         this.$emit('selected', this.name, newValue)
       },
-    },
-  },
-  methods: {
-    handleSelect(value) {
-      this.$emit('input', this.name, value)
     },
   },
 }

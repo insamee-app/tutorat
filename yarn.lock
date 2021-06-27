@@ -11083,6 +11083,11 @@
   "resolved" "https://registry.npmjs.org/vue-router/-/vue-router-3.5.1.tgz"
   "version" "3.5.1"
 
+"vue-screen@^1.5.4":
+  "integrity" "sha512-uPyiOs/thipwR+/fz9c6tQ1oI7V25YG+od/kF2Yl8UTtCl13EPZhEloD+dMgQ7znXOCmRe+u+IQdmbVobBa0lg=="
+  "resolved" "https://registry.npmjs.org/vue-screen/-/vue-screen-1.5.4.tgz"
+  "version" "1.5.4"
+
 "vue-server-renderer@^2.6.12":
   "integrity" "sha512-HifYRa/LW7cKywg9gd4ZtvtRuBlstQBao5ZCWlg40fyB4OPoGfEXAzxb0emSLv4pBDOHYx0UjpqvxpiQFEuoLA=="
   "resolved" "https://registry.npmjs.org/vue-server-renderer/-/vue-server-renderer-2.6.14.tgz"
