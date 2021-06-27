@@ -9,17 +9,16 @@ export const mutations = {
       state.profile = profile
     }
   },
-  setUser(state, user) {
-    state.profile.user = user
-  },
 }
 
 export const actions = {
   login({ commit }, profile) {
     commit('setProfile', profile)
   },
-  logout({ commit }) {
+  async logout({ commit }) {
+    await this.$axios.post('/auth/logout')
     commit('setProfile', undefined)
+    this.$router.push({ name: 'index' })
   },
 }
 

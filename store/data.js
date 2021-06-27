@@ -9,8 +9,12 @@ export const state = () => ({
     { id: 'offre', name: 'offre' },
     { id: 'demande', name: 'demande' },
   ],
-  tutoratPosts: undefined,
-  userTutoratPosts: undefined,
+  profile: {
+    tutorats: {
+      offer: undefined,
+      demand: undefined,
+    },
+  },
 })
 
 export const mutations = {
@@ -20,10 +24,7 @@ export const mutations = {
   setSchools(state, schools) {
     state.schools = schools
   },
-  setTutoratPosts(state, tutoratPosts) {
-    state.tutoratPosts = tutoratPosts
-  },
-  setUserTutoratPosts(state, userTutoratPosts) {
-    state.userTutoratPosts = userTutoratPosts
+  setProfileTutorats(state, { type, value }) {
+    state.profile.tutorats[type] = value
   },
 }

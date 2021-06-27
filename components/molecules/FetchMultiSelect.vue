@@ -2,10 +2,11 @@
   <div class="flex flex-col items-center">
     <InsameeIconSpinner
       v-if="$fetchState.pending"
-      class="w-6 h-6 my-4 fill-current animate-spin text-primary-dark"
+      class="animate-spin text-primary-dark fill-current h-6 w-6 my-4"
     ></InsameeIconSpinner>
     <AppMultiSelect
       v-else
+      :value="value"
       track-by="id"
       :custom-label="format"
       :options="fetchedData"
@@ -34,8 +35,7 @@ export default {
     },
     format: {
       type: Function,
-      default: ({ name }) =>
-        name !== '' ? name.charAt(0).toUpperCase() + name.slice(1) : name,
+      default: ({ name }) => name.toUpperCase(),
     },
   },
 }

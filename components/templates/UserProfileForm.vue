@@ -115,6 +115,7 @@
 <script>
 import { numeric, between, maxLength, url } from 'vuelidate/lib/validators'
 import { mapState } from 'vuex'
+
 const date = new Date()
 
 export default {
@@ -185,17 +186,13 @@ export default {
     transformedProfile() {
       const profile = {}
       Object.assign(profile, this.fieldsProfile)
-      profile.tutoratProfile = {
-        preferredSubjects: this.fieldsProfile.preferredSubjects.map(
-          (sub) => sub.id
-        ),
-        difficultiesSubjects: this.fieldsProfile.difficultiesSubjects.map(
-          (sub) => sub.id
-        ),
-        text: this.fieldsProfile.text,
-      }
-      delete profile.preferredSubjects
-      delete profile.difficultiesSubjects
+
+      profile.preferredSubjects = this.fieldsProfile.preferredSubjects.map(
+        (subject) => subject.id
+      )
+      profile.difficultiesSubjects =
+        this.fieldsProfile.difficultiesSubjects.map((subject) => subject.id)
+
       return profile
     },
     lastNameMessage() {
@@ -276,29 +273,16 @@ export default {
     async sendUser() {
       this.loading = true
       try {
-        await this.$axios.patch(
-          `/api/v1/profiles/${this.userId}`,
-          { ...this.transformedProfile },
-          {
-            withCredentials: true,
-          }
-        )
-        const TutoratProfileResponse = await this.$axios.patch(
+        const response = await this.$axios.patch(
           `/api/v1/profiles/${this.userId}?populate=tutorat`,
-          { ...this.transformedProfile.tutoratProfile },
-          {
-            withCredentials: true,
-          }
+          { ...this.transformedProfile }
         )
-        this.$store.commit('auth/setProfile', {
-          ...TutoratProfileResponse.data,
-        })
-        this.loading = false
+        this.$store.commit('auth/setProfile', response.data)
         this.$emit('close')
       } catch (error) {
-        this.loading = false
         this.errors = error.response.data.errors
       }
+      this.loading = false
     },
   },
 }

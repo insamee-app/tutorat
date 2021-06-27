@@ -5,14 +5,14 @@
       :id="name"
       :name="name"
       class="
-        p-3
-        border
-        rounded-md
-        border-primary-dark
+        py-1
+        px-2
+        border border-primary-dark
+        rounded
         bg-grey-light
-        form-select
+        focus:outline-none
       "
-      @input="emitValues"
+      @input="$emit('input', $event.target.value)"
     >
       <option
         v-for="item in selectItems"
@@ -32,9 +32,8 @@ export default {
   name: 'AppSelect',
   props: {
     value: {
-      default: '',
+      type: String,
       required: true,
-      type: String || Array || Object || Number,
     },
     name: {
       type: String,
@@ -66,10 +65,6 @@ export default {
   methods: {
     isSelected(id, value) {
       return String(id) === String(value)
-    },
-    emitValues(event) {
-      this.$emit('input', event.target.value)
-      this.$emit('selected', this.name, event.target.value)
     },
   },
 }

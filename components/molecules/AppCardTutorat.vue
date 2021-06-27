@@ -76,6 +76,7 @@
 </template>
 
 <script>
+// on doit utiliser le fetchData pour rendre ces cartes autonomes et ne fetch qu'une fois
 import { mapState } from 'vuex'
 export default {
   name: 'AppCardTutorat',
