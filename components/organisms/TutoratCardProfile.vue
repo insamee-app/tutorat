@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row justify-center my-6">
+  <div class="flex">
     <InsameeAppProfileAvatar
       :variant="isDemand(type) ? 'secondary' : 'primary'"
       size="small"

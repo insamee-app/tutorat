@@ -5,10 +5,10 @@ export default {
   },
 
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  ssr: true,
 
   // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+  target: 'server',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -27,16 +27,11 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
-  tailwindcss: {
-    jit: true,
-  },
-
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/vuelidate.js' },
-    { src: '~/plugins/v-scroll-lock.js' },
-    { src: '~/plugins/getProfile.client.js' },
+    '~/plugins/getProfile.server.js',
     '~/plugins/axios',
+    '~/plugins/vue-scroll-lock.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -55,7 +50,7 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
-    'insamee-components/nuxt',
+    '@insamee-app/components/nuxt',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -73,8 +68,8 @@ export default {
   },
 
   proxy: {
-    '/api/**': process.env.BROWSER_BASE_URL,
-    '/auth/**': process.env.BROWSER_BASE_URL,
+    '/api/**': process.env.API_URL,
+    '/auth/**': process.env.API_URL,
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

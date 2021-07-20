@@ -1,18 +1,31 @@
 <template>
   <InsameeHeader
-    :icon-link="{ name: 'index' }"
+    :name-link="{ name: 'index' }"
     :icon-nav="!$screen.md"
     @open="$emit('open', $event)"
   >
+    <template #name>
+      <template v-if="$screen.md"> Tutorat </template>
+      <template v-else> <InsameeIconTutorat class="w-6 h-6" /> </template>
+    </template>
     <template #nav>
       <InsameeHeaderNav v-if="$screen.md">
         <InsameeAppList :list="nav" row />
       </InsameeHeaderNav>
     </template>
     <template #actions>
-      <InsameeAppButton v-if="loggedIn()" :to="{ name: 'tutorats' }">
-        Trouver des tutorats
-      </InsameeAppButton>
+      <template v-if="loggedIn()">
+        <InsameeAppButton :to="{ name: 'tutorats' }">
+          Trouver des tutorats
+        </InsameeAppButton>
+        <InsameeAppTeam
+          v-if="$screen.md"
+          link-tutorat="/"
+          :link-evenements="$config.insameeURL"
+          :link-associations="$config.associationsURL"
+          :link-insamee="$config.insameeURL"
+        />
+      </template>
       <InsameeAppButton
         v-if="!loggedIn() && $screen.md"
         empty

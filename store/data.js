@@ -1,30 +1,34 @@
 export const state = () => ({
-  subjects: undefined,
-  schools: undefined,
-  currentRoles: [
-    { id: 'étudiant', name: 'étudiant' },
-    { id: 'personnel', name: 'personnel' },
-  ],
-  tutoratTypes: [
-    { id: 'offre', name: 'offre' },
-    { id: 'demande', name: 'demande' },
-  ],
-  profile: {
-    tutorats: {
-      offer: undefined,
-      demand: undefined,
-    },
-  },
+  subjects: [],
+  schools: [],
 })
 
 export const mutations = {
-  setSubjects(state, subjects) {
-    state.preferredSubjects = subjects
+  set(state, { name, value }) {
+    state[name] = value
   },
-  setSchools(state, schools) {
-    state.schools = schools
+}
+
+export const actions = {
+  async fetch({ state, commit }, name) {
+    if (!state[name].length) {
+      const { data } = await this.$axios.get(`/api/v1/${name}?serialize=filter`)
+      commit('set', { name, value: data })
+    }
   },
-  setProfileTutorats(state, { type, value }) {
-    state.profile.tutorats[type] = value
+}
+
+export const getters = {
+  subjects(state) {
+    return state.subjects.map((subject) => ({
+      text: subject.name,
+      value: subject.id,
+    }))
+  },
+  schools(state) {
+    return state.schools.map((school) => ({
+      text: school.name,
+      value: school.id,
+    }))
   },
 }

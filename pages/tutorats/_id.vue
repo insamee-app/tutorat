@@ -1,12 +1,13 @@
 <template>
   <div>
-    <InsameeAppContainer class="max-w-4xl mx-auto space-y-8">
-      <AppTutoratHeader
+    <InsameeAppContainer class="mx-auto space-y-8" small>
+      <TutoratCardHeader
         :type="tutorat.type"
         :school-name="tutorat.school.name"
         :subject-name="tutorat.subject.name"
       />
-      <AppTutoratAvatar
+      <TutoratCardProfile
+        class="justify-center"
         :type="tutorat.type"
         :current-role="tutorat.profile.current_role"
         :last-name="tutorat.profile.last_name"
@@ -29,7 +30,7 @@
         />
       </section>
       <div class="flex justify-evenly">
-        <template v-if="profile.user_id === tutorat.user_id">
+        <!-- <template v-if="profile.user_id === tutorat.user_id">
           <div class="space-x-4 flex flex-row">
             <InsameeAppButton
               variant="negative"
@@ -48,8 +49,8 @@
               Editer
             </InsameeAppButton>
           </div>
-        </template>
-        <InsameeAppButton
+        </template> -->
+        <!-- <InsameeAppButton
           class="z-10"
           :variant="isDemand(tutorat.type) ? 'secondary' : 'primary'"
           :to="{
@@ -59,8 +60,8 @@
             },
           }"
         >
-          Prendre Contact
-        </InsameeAppButton>
+          Contacter {{ tutorat.profile.first_name }}
+        </InsameeAppButton> -->
       </div>
 
       <div class="flex justify-center relative -top-12 z-0">
@@ -69,7 +70,7 @@
       </div>
       <InsameeAppError :error-message="errorMessage" class="text-center" />
     </InsameeAppContainer>
-    <InsameeAppModal
+    <!-- <InsameeAppModal
       v-slot="{ size }"
       v-model="editTutorat"
       v-scroll-lock="editTutorat"
@@ -84,7 +85,7 @@
         @close="editTutorat = false"
         @refresh="refresh"
       />
-    </InsameeAppModal>
+    </InsameeAppModal> -->
   </div>
 </template>
 
@@ -94,6 +95,8 @@ export default {
   middleware: 'authenticated',
   async asyncData({ $axios, params }) {
     const { data } = await $axios.get(`/api/v1/tutorats/${params.id}`)
+
+    console.log(data)
 
     return { tutorat: data }
   },

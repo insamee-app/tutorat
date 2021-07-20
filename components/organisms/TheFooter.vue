@@ -1,15 +1,13 @@
 <template>
-  <InsameeFooter
-    ><InsameeAppButton empty :to="{ name: 'legalNotices' }" variant="secondary"
-      >Mentions légales</InsameeAppButton
-    ></InsameeFooter
-  >
+  <InsameeFooter>
+    <InsameeAppButton empty :to="{ name: 'legal-notices' }" variant="secondary">
+      Mentions légales
+    </InsameeAppButton>
+  </InsameeFooter>
 </template>
 
 <script>
 export default {
-  name: 'Footer',
+  name: 'TheFooter',
 }
 </script>
-
-<style></style>

@@ -1,51 +1,56 @@
 <template>
-  <div>
-    <AppTutoratCard
-      :id="id"
-      :subject-name="subjectName"
-      :school-name="schoolName"
-      :avatar-url="avatarUrl"
-      :type="type"
-      :text="text"
-      :time="minToHours(time)"
-      :first-name="firstName"
-      :last-name="lastName"
-      :current-role="currentRole"
-      :user-id="userId"
-      :owner-id="ownerId"
-    />
-  </div>
-
-  <!-- <InsameeAppModal
-      v-model="toggleEdit"
-      v-scroll-lock="toggleEdit"
-      @outside="toggleEdit = false"
-    >
-      <EditTutoratForm
-        :tutorat-text="tutoratProfile.text"
-        :tutorat-time="tutoratProfile.time"
-        :tutorat-id="tutoratProfile.id"
-        @close="toggleEdit = false"
-        @refresh="$emit('refresh')"
+  <InsameeAppCard
+    shadow
+    reduced
+    :to="{
+      name: 'tutorats-id',
+      params: {
+        id,
+      },
+    }"
+  >
+    <template #header>
+      <InsameeAppCardHeader>
+        <TutoratCardHeader
+          :type="type"
+          :school-name="schoolName"
+          :subject-name="subjectName"
+        />
+      </InsameeAppCardHeader>
+    </template>
+    <InsameeAppCardContent justify>
+      <TutoratCardProfile
+        :type="type"
+        :current-role="currentRole"
+        :last-name="lastName"
+        :first-name="firstName"
       />
-    </InsameeAppModal> -->
+      <div class="mt-4">
+        <template v-if="isOffer(type)">
+          <span class="font-bold">{{ minToHours(time) }}</span>
+          -
+        </template>
+        {{ text }}
+      </div>
+    </InsameeAppCardContent>
+    <template #actions>
+      <div class="flex justify-end">
+        <InsameeAppButton
+          shadow
+          :variant="isDemand(type) ? 'secondary' : 'primary'"
+        >
+          Voir plus
+        </InsameeAppButton>
+      </div>
+    </template>
+  </InsameeAppCard>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
-  name: 'AppCardTutorat',
+  name: 'TutoratCard',
   props: {
     id: {
-      type: Number,
-      required: true,
-    },
-    userId: {
-      type: Number,
-      required: true,
-    },
-    ownerId: {
       type: Number,
       required: true,
     },
@@ -54,10 +59,6 @@ export default {
       default: '',
     },
     schoolName: {
-      type: String,
-      default: '',
-    },
-    avatarUrl: {
       type: String,
       default: '',
     },
@@ -70,6 +71,10 @@ export default {
       default: 0,
     },
     text: {
+      type: String,
+      default: '',
+    },
+    avatarUrl: {
       type: String,
       default: '',
     },
@@ -86,25 +91,18 @@ export default {
       default: '',
     },
   },
-  data() {
-    return {
-      toggleEdit: false,
-    }
-  },
-  computed: {
-    ...mapState({ profile: (state) => state.auth.profile }),
-  },
   methods: {
-    minToHours(minAmount) {
-      const hours = Math.floor(minAmount / 60)
-      const minutes = minAmount % 60
-      return `${hours}h${minutes !== 0 ? minutes : ''}`
+    isOffer(type) {
+      return type === 'offre'
     },
-    capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1)
+    isDemand(type) {
+      return type === 'demande'
+    },
+    minToHours(time) {
+      const hours = Math.floor(time / 60)
+      const minutes = time % 60
+      return `${hours}h${minutes !== 0 ? minutes : ''}`
     },
   },
 }
 </script>
-
-<style></style>

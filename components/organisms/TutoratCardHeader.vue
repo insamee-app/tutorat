@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-between">
+  <div class="flex flex-col">
     <div class="text-xl font-bold truncate">
       <span
         class="uppercase"
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'AppTutoratHeader',
+  name: 'TutoratCardHeader',
   props: {
     schoolName: {
       type: String,
