@@ -18,7 +18,7 @@
         "
       >
         <InsameeProfileContact :links="socials" />
-        <InsameeLabeledItem label="Mes demandes et mes offres">
+        <!-- <InsameeLabeledItem label="Mes demandes et mes offres">
           <section class="space-y-4">
             <div class="flex flex-row w-full pt-4 justify-evenly">
               <InsameeAppButton
@@ -97,16 +97,16 @@
               </template>
             </InsameeResponsiveListCards>
           </section>
-        </InsameeLabeledItem>
+        </InsameeLabeledItem> -->
       </InsameeTutoratProfile>
-      <section class="flex justify-between sticky bottom-4 mt-8">
+      <!-- <section class="flex justify-between sticky bottom-4 mt-8">
         <InsameeAppButton large @click="createTutorat = true">
           Créer un tutorat
         </InsameeAppButton>
         <InsameeAppButton large @click="editProfile = true">
           Editer le profil
         </InsameeAppButton>
-      </section>
+      </section> -->
       <section>
         <h2 class="text-xl font-bold mt-8">Paramètre du compte</h2>
         <div class="text-center mt-4">
