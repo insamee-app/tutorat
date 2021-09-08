@@ -34,6 +34,7 @@ export default {
   plugins: [
     '~/plugins/getProfile.server.js',
     '~/plugins/axios',
+    '~/plugins/vuelidate.js',
     '~/plugins/vue-scroll-lock.js',
   ],
 

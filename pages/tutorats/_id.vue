@@ -94,7 +94,11 @@
           Contacter {{ tutorat.profile.first_name }}
         </InsameeAppButton> -->
       </div>
-      <div class="mt-4">Signaler le tutorat</div>
+      <Report v-slot="{ on }" type="tutorats" class="mt-4">
+        <InsameeAppButton empty variant="grey-secondary" v-on="on">
+          Signaler le tutorat
+        </InsameeAppButton>
+      </Report>
       <div class="absolute transform -translate-x-1/2 left-1/2">
         <GraphicOffer v-if="isOffer" />
         <GraphicDemand v-else />
@@ -146,8 +150,6 @@ export default {
     const { data } = await $axios.get(
       `/api/v1/tutorats/${params.id}?platform=tutorat&serialize=full`
     )
-
-    console.log(data)
 
     return { tutorat: data }
   },
