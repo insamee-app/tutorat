@@ -1,35 +1,66 @@
 <template>
-  <div>
-    <InsameeAppContainer class="mx-auto space-y-8" small>
-      <TutoratCardHeader
-        :type="tutorat.type"
-        :school-name="tutorat.school.name"
-        :subject-name="tutorat.subject.name"
-      />
-      <TutoratCardProfile
-        class="justify-center"
-        :type="tutorat.type"
-        :current-role="tutorat.profile.current_role"
-        :last-name="tutorat.profile.last_name"
+  <InsameeAppContainer class="mx-auto space-y-8 overflow-hidden" small>
+    <TutoratCardHeader
+      :type="tutorat.type"
+      :school-name="tutorat.school.name"
+      :subject-name="tutorat.subject.name"
+      :interested-count="tutorat.users_interested_count"
+    />
+    <TutoratCardProfile
+      class="justify-center"
+      :type="tutorat.type"
+      :current-role="tutorat.profile.current_role"
+      :last-name="tutorat.profile.last_name"
+      :first-name="tutorat.profile.first_name"
+    />
+    <div class="font-bold text-center">
+      {{ formatedTime }}
+    </div>
+    <section class="max-w-md mx-auto space-y-8">
+      <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>
+      <TutoratTextSummary
         :first-name="tutorat.profile.first_name"
+        :last-name="tutorat.profile.last_name"
+        :type="tutorat.type"
+        :subject-name="tutorat.subject.name"
+        :time="tutorat.time"
+        :email="tutorat.profile.user.email"
+        :user-id="tutorat.user_id"
       />
-      <div class="font-bold text-center">
-        {{ formatedTime }}
-      </div>
-      <section class="max-w-md mx-auto">
-        <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>
-        <TutoratText
-          v-else
-          :first-name="tutorat.profile.first_name"
-          :last-name="tutorat.profile.last_name"
-          :type="tutorat.type"
-          :subject-name="tutorat.subject.name"
-          :time="tutorat.time"
-          :email="tutorat.profile.user.email"
-          :user-id="tutorat.user_id"
-        />
-      </section>
-      <div class="flex justify-evenly">
+      <TutoratTextCount
+        :interested-count="tutorat.users_interested_count"
+        :type="tutorat.type"
+      />
+    </section>
+    <div class="relative">
+      <div class="flex justify-evenly items-center">
+        <InsameeAppButton
+          border
+          large
+          shadow
+          :variant="isOffer ? 'primary' : 'secondary'"
+          @click="dialogContact = true"
+        >
+          Contacter {{ firstName }}
+        </InsameeAppButton>
+        <Interested v-slot="{ on, interested, loading }">
+          <InsameeAppButton
+            :variant="isOffer ? 'primary' : 'secondary'"
+            large
+            shadow
+            :border="interested"
+            :disabled="loading"
+            :loading="loading"
+            v-on="on"
+          >
+            {{
+              interested
+                ? 'Je ne suis plus intéréssé(e)'
+                : 'Je suis intéressé(e)'
+            }}
+          </InsameeAppButton>
+        </Interested>
+        <!-- TODO: ça doit devenir son propre composant pour avoir un fetch -->
         <!-- <template v-if="profile.user_id === tutorat.user_id">
           <div class="space-x-4 flex flex-row">
             <InsameeAppButton
@@ -63,13 +94,26 @@
           Contacter {{ tutorat.profile.first_name }}
         </InsameeAppButton> -->
       </div>
-
-      <div class="flex justify-center relative -top-12 z-0">
-        <GraphicOffer v-if="isOffer(tutorat.type)" />
+      <div class="mt-4">Signaler le tutorat</div>
+      <div class="absolute transform -translate-x-1/2 left-1/2">
+        <GraphicOffer v-if="isOffer" />
         <GraphicDemand v-else />
       </div>
-      <InsameeAppError :error-message="errorMessage" class="text-center" />
-    </InsameeAppContainer>
+    </div>
+
+    <!-- <InsameeAppError :error-message="errorMessage" class="text-center" /> -->
+    <Portal v-if="dialogContact">
+      <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
+        <InsameeAppCard>
+          <InsameeAppCardHeader closable @close="dialogContact = false">
+            <InsameeAppCardTitle>
+              Contacter {{ firstName }}
+            </InsameeAppCardTitle>
+          </InsameeAppCardHeader>
+          <InsameeAppContact :links="socials" />
+        </InsameeAppCard>
+      </InsameeAppModal>
+    </Portal>
     <!-- <InsameeAppModal
       v-slot="{ size }"
       v-model="editTutorat"
@@ -86,15 +130,22 @@
         @refresh="refresh"
       />
     </InsameeAppModal> -->
-  </div>
+  </InsameeAppContainer>
 </template>
 
 <script>
+import { Portal } from '@linusborg/vue-simple-portal'
 import { mapState } from 'vuex'
+
 export default {
+  components: {
+    Portal,
+  },
   middleware: 'authenticated',
   async asyncData({ $axios, params }) {
-    const { data } = await $axios.get(`/api/v1/tutorats/${params.id}`)
+    const { data } = await $axios.get(
+      `/api/v1/tutorats/${params.id}?platform=tutorat&serialize=full`
+    )
 
     console.log(data)
 
@@ -102,6 +153,7 @@ export default {
   },
   data() {
     return {
+      dialogContact: false,
       errorMessage: '',
       editTutorat: false,
       deleting: false,
@@ -118,14 +170,25 @@ export default {
         return undefined
       }
     },
+    firstName() {
+      return this.tutorat.profile.first_name ?? ''
+    },
+    socials() {
+      return {
+        facebook: this.tutorat.profile.url_facebook,
+        instagram: this.tutorat.profile.url_instagram,
+        twitter: this.tutorat.profile.url_twitter,
+        mobile: this.tutorat.profile.mobile,
+      }
+    },
+    isOffer() {
+      return this.tutorat.type === 'offre'
+    },
+    isDemand() {
+      return this.tutorat.type === 'demande'
+    },
   },
   methods: {
-    isOffer(type) {
-      return type === 'offre'
-    },
-    isDemand(type) {
-      return type === 'demande'
-    },
     refresh(data) {
       this.editTutorat = false
       this.tutorat = data
