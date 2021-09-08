@@ -8,34 +8,36 @@
     :school-name="profile.school.name"
     :socials="socials"
     :difficulties-subjects="
-      getTexts(profile.tutoratProfile.difficultiesSubjects)
+      getTexts(profile.tutorat_profile.difficulties_subjects)
     "
-    :preferred-subjects="getTexts(profile.tutoratProfile.preferredSubjects)"
-    :avatar-url="profile.avatar"
-    :text="profile.tutoratProfile.text"
-    variant="secondary"
-  />
+    :preferred-subjects="getTexts(profile.tutorat_profile.preferred_subjects)"
+    :text="profile.tutorat_profile.text"
+    :avatar-url="profile.url_picture"
+  >
+    <template #report>
+      <Report v-slot="{ on }" type="profiles">
+        <InsameeAppButton empty variant="grey-secondary" v-on="on">
+          Signaler le mee
+        </InsameeAppButton>
+      </Report>
+    </template>
+  </InsameeMeeTutoratProfile>
 </template>
 
 <script>
 import getTexts from '@/mixins/getTexts'
-
 export default {
   mixins: [getTexts],
   middleware: 'authenticated',
-  async asyncData({ params, $axios, error }) {
+  async asyncData({ params, $axios }) {
     const path = '/api/v1/profiles'
     const { id } = params
+    const { data: profile } = await $axios.get(
+      `${path}/${id}?populate=tutorat&platform=tutorat&serialize=full`
+    )
 
-    try {
-      const { data: profile } = await $axios.get(
-        `${path}/${id}?populate=tutorat`
-      )
-      return {
-        profile,
-      }
-    } catch (e) {
-      error(e.response.data)
+    return {
+      profile,
     }
   },
   computed: {
