@@ -10,11 +10,13 @@
     }"
   >
     <template #header>
-      <InsameeAppCardHeader>
+      <InsameeAppCardHeader class="w-full">
         <TutoratCardHeader
+          class="w-full"
           :type="type"
           :school-name="schoolName"
           :subject-name="subjectName"
+          :interested-count="interestedCount"
         />
       </InsameeAppCardHeader>
     </template>
@@ -35,10 +37,7 @@
     </InsameeAppCardContent>
     <template #actions>
       <div class="flex justify-end">
-        <InsameeAppButton
-          shadow
-          :variant="isDemand(type) ? 'secondary' : 'primary'"
-        >
+        <InsameeAppButton :variant="isDemand(type) ? 'secondary' : 'primary'">
           Voir plus
         </InsameeAppButton>
       </div>
@@ -89,6 +88,10 @@ export default {
     currentRole: {
       type: String,
       default: '',
+    },
+    interestedCount: {
+      type: Number,
+      default: 0,
     },
   },
   methods: {
