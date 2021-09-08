@@ -12,7 +12,9 @@ export const mutations = {
 export const actions = {
   async fetch({ state, commit }, name) {
     if (!state[name].length) {
-      const { data } = await this.$axios.get(`/api/v1/${name}?serialize=filter`)
+      const { data } = await this.$axios.get(
+        `/api/v1/${name}?serialize=filter&platform=tutorat`
+      )
       commit('set', { name, value: data })
     }
   },

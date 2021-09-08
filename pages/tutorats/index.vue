@@ -31,6 +31,7 @@
             :first-name="tutorat.profile.first_name"
             :last-name="tutorat.profile.last_name"
             :current-role="tutorat.profile.current_role"
+            :interested-count="tutorat.users_interested_count"
           />
         </template>
       </InsameeResponsiveListCards>
@@ -110,7 +111,7 @@ export default {
   },
   async fetch() {
     const query = this.$store.getters['filters/getTutoratsSearchParams']
-    const path = `/api/v1/tutorats?${query}&serialize=card`
+    const path = `/api/v1/tutorats?${query}&serialize=card&platform=tutorat`
 
     const { data } = await this.$axios.get(path)
 
