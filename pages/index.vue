@@ -58,7 +58,7 @@
 export default {
   computed: {
     heroBannerClass() {
-      return 'flex-1 self-end mt-8 sm:w-[60%] md:m-0 md:h-[28rem]'
+      return 'flex-1 self-end mt-8 w-[70%] sm:w-[60%] md:m-0 md:h-[28rem]'
     },
   },
 }
