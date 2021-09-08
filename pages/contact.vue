@@ -6,10 +6,10 @@
 
 <script>
 export default {
-  data() {
-    return {
-      mail: 'mailto:',
-    }
+  computed: {
+    mail() {
+      return 'mailto:' + this.$config.mailContact
+    },
   },
 }
 </script>

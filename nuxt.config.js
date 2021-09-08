@@ -78,5 +78,6 @@ export default {
   publicRuntimeConfig: {
     insameeURL: process.env.INSAMEE_URL,
     associationsURL: process.env.ASSOCIATIONS_URL,
+    mailContact: process.env.MAIL_CONTACT,
   },
 }
