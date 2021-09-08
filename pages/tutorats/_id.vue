@@ -16,7 +16,9 @@
     <div class="font-bold text-center">
       {{ formatedTime }}
     </div>
-    <section class="max-w-md mx-auto space-y-8">
+    <section
+      class="max-w-md mx-auto space-y-8 relative mix-blend-multiply z-10"
+    >
       <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>
       <TutoratTextSummary
         :first-name="tutorat.profile.first_name"
@@ -33,7 +35,23 @@
       />
     </section>
     <div class="relative">
-      <div class="flex justify-evenly items-center">
+      <div
+        class="
+          absolute
+          transform
+          -translate-x-1/2
+          left-1/2
+          -top-3/4
+          md:top-1/4
+          z-0
+        "
+      >
+        <GraphicOffer v-if="isOffer" />
+        <GraphicDemand v-else />
+      </div>
+      <div
+        class="flex flex-col md:flex-row justify-evenly items-center relative"
+      >
         <InsameeAppButton
           border
           large
@@ -46,6 +64,7 @@
         <Interested v-slot="{ on, interested, loading }">
           <InsameeAppButton
             :variant="isOffer ? 'primary' : 'secondary'"
+            class="mt-4 md:mt-0"
             large
             shadow
             :border="interested"
@@ -94,15 +113,15 @@
           Contacter {{ tutorat.profile.first_name }}
         </InsameeAppButton> -->
       </div>
-      <Report v-slot="{ on }" type="tutorats" class="mt-4">
+      <Report
+        v-slot="{ on }"
+        type="tutorats"
+        class="mt-4 relative mix-blend-multiply"
+      >
         <InsameeAppButton empty variant="grey-secondary" v-on="on">
           Signaler le tutorat
         </InsameeAppButton>
       </Report>
-      <div class="absolute transform -translate-x-1/2 left-1/2">
-        <GraphicOffer v-if="isOffer" />
-        <GraphicDemand v-else />
-      </div>
     </div>
 
     <!-- <InsameeAppError :error-message="errorMessage" class="text-center" /> -->
