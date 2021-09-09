@@ -96,6 +96,28 @@
         @update="updateComboboxMultiple"
       />
     </InsameeLabeledItem>
+    <InsameeLabeledItem
+      class="mt-2"
+      label="Lieu du tutorat"
+      variant="secondary"
+      class-name="text-base"
+    >
+      <div class="flex justify-between">
+        <InsameeAppButton
+          variant="secondary"
+          :border="filters.siting !== 'en présence'"
+          @click.prevent="setSiting('en présence')"
+        >
+          En Présence
+        </InsameeAppButton>
+        <InsameeAppButton
+          :border="filters.siting !== 'à distance'"
+          @click.prevent="setSiting('à distance')"
+        >
+          À Distance
+        </InsameeAppButton>
+      </div>
+    </InsameeLabeledItem>
     <div class="flex justify-between mt-4">
       <InsameeAppButton variant="secondary" border type="reset" shadow>
         Réinitialiser
@@ -116,6 +138,7 @@ export default {
         currentRole: {},
         type: undefined,
         time: {},
+        siting: undefined,
         'schools[]': [],
         'subjects[]': [],
       },
@@ -162,6 +185,7 @@ export default {
         ) ?? {}
 
     this.filters.type = this.$store.getters['filters/type']
+    this.filters.siting = this.$store.getters['filters/siting']
   },
   methods: {
     setType(type) {
@@ -171,6 +195,14 @@ export default {
       )
         this.filters.type = undefined
       else this.filters.type = type
+    },
+    setSiting(siting) {
+      if (
+        (siting === 'à distance' && this.filters.siting === 'à distance') ||
+        (siting === 'en présence' && this.filters.siting === 'en présence')
+      )
+        this.filters.siting = undefined
+      else this.filters.siting = siting
     },
     reset() {
       this.filters = {
@@ -186,6 +218,7 @@ export default {
       this.$emit('submit', {
         currentRole: this.filters.currentRole.value,
         type: this.filters.type,
+        siting: this.filters.siting,
         time: this.filters.time.value,
         'schools[]': this.filters['schools[]'].map((el) => el.value),
         'subjects[]': this.filters['subjects[]'].map((el) => el.value),

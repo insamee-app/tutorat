@@ -39,6 +39,7 @@ export const mutations = {
       'schools[]': [],
       'subjects[]': '',
       type: '',
+      siting: '',
       currentRole: '',
     }
   },
