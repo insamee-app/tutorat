@@ -31,6 +31,7 @@
             :first-name="tutorat.profile.first_name"
             :last-name="tutorat.profile.last_name"
             :current-role="tutorat.profile.current_role"
+            :siting="tutorat.siting"
             :interested-count="tutorat.users_interested_count"
           />
         </template>

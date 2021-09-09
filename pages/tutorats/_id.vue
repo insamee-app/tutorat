@@ -93,7 +93,6 @@ export default {
     this.profiles = data.data
     this.pagination = data.meta
   },
-
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
     firstName() {
@@ -114,7 +113,7 @@ export default {
       return this.tutorat.type === 'demande'
     },
     isCreator() {
-      return this.tutorat.user_id === this.tutorat.profile.user_id
+      return this.tutorat.user_id === this.profile.user_id
     },
     errorMessage() {
       return "Une error est survenue dans le chargement des profils. Si l'erreur persiste, n'hésitez pas à nous contacter"

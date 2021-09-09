@@ -8,21 +8,22 @@ export default {
     },
   },
   computed: {
+    isOffer() {
+      return this.tutorat.type === 'offre'
+    },
     formatedTime() {
-      if (this.tutorat.time) {
-        const hours = Math.floor(this.tutorat.time / 60)
-        const minutes = this.tutorat.time % 60
-        return `${hours}h${minutes !== 0 ? minutes : ''}`
-      } else {
-        return undefined
-      }
+      if (!this.isOffer) return
+
+      const hours = Math.floor(this.tutorat.time / 60)
+      const minutes = this.tutorat.time % 60
+      return `${hours}h${minutes !== 0 ? minutes : ''}`
     },
   },
 }
 </script>
 
 <template>
-  <section>
+  <section class="space-y-2 md:space-y-4">
     <TutoratCardHeader
       :type="tutorat.type"
       :school-name="tutorat.school.name"
@@ -36,8 +37,9 @@ export default {
       :last-name="tutorat.profile.last_name"
       :first-name="tutorat.profile.first_name"
     />
-    <div class="font-bold text-center mt-4">
-      {{ formatedTime }}
+    <div v-if="isOffer" class="font-bold text-center mt-4">
+      {{ formatedTime }} -
+      <span class="capitalize"> {{ tutorat.siting }} </span>
     </div>
     <div class="max-w-md mx-auto space-y-8 relative mix z-10">
       <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>

@@ -28,8 +28,10 @@
         :first-name="firstName"
       />
       <div class="mt-4">
-        <template v-if="isOffer(type)">
-          <span class="font-bold">{{ minToHours(time) }}</span>
+        <template v-if="isOffer">
+          <span class="font-bold">{{ formatedTime }}</span>
+          -
+          <span class="font-bold capitalize">{{ siting }}</span>
           -
         </template>
         {{ text }}
@@ -37,7 +39,7 @@
     </InsameeAppCardContent>
     <template #actions>
       <div class="flex justify-end">
-        <InsameeAppButton :variant="isDemand(type) ? 'secondary' : 'primary'">
+        <InsameeAppButton :variant="isDemand ? 'secondary' : 'primary'">
           Voir plus
         </InsameeAppButton>
       </div>
@@ -93,17 +95,23 @@ export default {
       type: Number,
       default: 0,
     },
+    siting: {
+      type: String,
+      default: '',
+    },
   },
-  methods: {
-    isOffer(type) {
-      return type === 'offre'
+  computed: {
+    isOffer() {
+      return this.type === 'offre'
     },
-    isDemand(type) {
-      return type === 'demande'
+    isDemand() {
+      return this.type === 'demande'
     },
-    minToHours(time) {
-      const hours = Math.floor(time / 60)
-      const minutes = time % 60
+    formatedTime() {
+      if (!this.isOffer) return
+
+      const hours = Math.floor(this.time / 60)
+      const minutes = this.time % 60
       return `${hours}h${minutes !== 0 ? minutes : ''}`
     },
   },
