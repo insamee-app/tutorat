@@ -6,6 +6,10 @@ export default {
       type: Object,
       required: true,
     },
+    isCreator: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
     isOffer() {
@@ -23,7 +27,7 @@ export default {
 </script>
 
 <template>
-  <section class="space-y-2 md:space-y-4">
+  <section class="space-y-4 md:space-y-6">
     <TutoratCardHeader
       :type="tutorat.type"
       :school-name="tutorat.school.name"
@@ -37,12 +41,14 @@ export default {
       :last-name="tutorat.profile.last_name"
       :first-name="tutorat.profile.first_name"
     />
-    <div v-if="isOffer" class="font-bold text-center mt-4">
+    <div v-if="isOffer" class="font-bold text-center">
       {{ formatedTime }} -
       <span class="capitalize"> {{ tutorat.siting }} </span>
     </div>
     <div class="max-w-md mx-auto space-y-8 relative mix z-10">
-      <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>
+      <div v-if="tutorat.text && !isCreator" class="text-justify">
+        {{ tutorat.text }}
+      </div>
       <TutoratTextSummary
         :first-name="tutorat.profile.first_name"
         :last-name="tutorat.profile.last_name"
@@ -51,8 +57,10 @@ export default {
         :time="tutorat.time"
         :email="tutorat.profile.user.email"
         :user-id="tutorat.user_id"
+        :is-creator="isCreator"
       />
       <TutoratTextCount
+        v-if="!isCreator"
         :interested-count="tutorat.users_interested_count"
         :type="tutorat.type"
       />

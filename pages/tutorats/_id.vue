@@ -1,7 +1,11 @@
 <template>
   <InsameeAppContainer class="mx-auto space-y-8 overflow-hidden" small>
-    <TutoratInformation :tutorat="tutorat" />
-    <TutoratActions :first-name="firstName" :is-offer="isOffer">
+    <TutoratInformation :tutorat="tutorat" :is-creator="isCreator" />
+    <TutoratActions
+      :first-name="firstName"
+      :is-offer="isOffer"
+      :is-creator="isCreator"
+    >
       <template #graphic>
         <div
           class="
@@ -20,27 +24,29 @@
         </div>
       </template>
     </TutoratActions>
-    <div
-      v-if="isCreator && isOffer && $fetchState.pending"
-      class="grid gap-4 lg:gap-8 grid-cols-1 md:grid-cols-2"
-    >
-      <InsameeSkeletonCard
-        v-for="value in $store.state.filters.pagination.profiles.limit"
-        :key="value"
+    <div v-if="isCreator">
+      <div
+        v-if="isOffer && $fetchState.pending"
+        class="grid gap-4 lg:gap-8 grid-cols-1 md:grid-cols-2"
+      >
+        <InsameeSkeletonCard
+          v-for="value in $store.state.filters.pagination.profiles.limit"
+          :key="value"
+        />
+      </div>
+      <InsameeAppError
+        v-else-if="isOffer && $fetchState.error"
+        :error-message="errorMessage"
+      />
+      <TutoratProfiles
+        v-else-if="isOffer"
+        :profiles="profiles"
+        :pagination="pagination"
+        :tutorat-type="tutorat.type"
+        class="relative"
+        @pagination="refreshProfilesPagination"
       />
     </div>
-    <InsameeAppError
-      v-else-if="isCreator && isOffer && $fetchState.error"
-      :error-message="errorMessage"
-    />
-    <TutoratProfiles
-      v-else-if="isCreator && isOffer"
-      :profiles="profiles"
-      :pagination="pagination"
-      :tutorat-type="tutorat.type"
-      class="relative"
-      @pagination="refreshProfilesPagination"
-    />
     <Portal v-if="dialogContact">
       <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
         <InsameeAppCard>

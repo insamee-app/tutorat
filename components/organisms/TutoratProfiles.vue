@@ -5,7 +5,9 @@
       :class="{ 'text-primary-base': isOffer, 'text-secondary-base': isDemand }"
     >
       <span class="text-lg"> Profils Intéréssés </span>
-      <TutoratProfilesContact :is-offer="isOffer" />
+      <client-only>
+        <TutoratProfilesContact :is-offer="isOffer" />
+      </client-only>
     </div>
     <template v-if="pagination.total">
       <template v-if="profiles.length">
@@ -18,15 +20,15 @@
             :first-name="profile.first_name"
             :current-role="profile.current_role"
             :user-id="profile.user_id"
-            :text="profile.text"
-            :focus-interests="getTexts(profile.insamee_profile.focus_interests)"
+            :text="profile.insamee_profile.short_text"
+            :skills="getTexts(profile.insamee_profile.skills)"
             :associations="profile.insamee_profile.associations"
             :link="profile.link"
           />
         </div>
         <InsameePagination
           class="mt-8 max-w-lg mx-auto"
-          :small="$screen.lg"
+          :small="!$screen.md"
           :previous-page="
             pagination.previous_page_url
               ? pagination.current_page - 1

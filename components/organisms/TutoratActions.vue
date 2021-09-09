@@ -10,6 +10,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    isCreator: {
+      type: Boolean,
+      required: true,
+    },
   },
 }
 </script>
@@ -17,7 +21,10 @@ export default {
 <template>
   <section class="relative">
     <slot name="graphic"></slot>
-    <div class="flex flex-col md:flex-row justify-evenly items-center relative">
+    <div
+      v-if="!isCreator"
+      class="flex flex-col md:flex-row justify-evenly items-center relative"
+    >
       <InsameeAppButton
         border
         large
@@ -44,7 +51,7 @@ export default {
         </InsameeAppButton>
       </Interested>
     </div>
-    <Report v-slot="{ on }" type="tutorats" class="mt-4">
+    <Report v-if="!isCreator" v-slot="{ on }" type="tutorats" class="mt-4">
       <InsameeAppButton empty variant="grey-secondary" v-on="on">
         Signaler le tutorat
       </InsameeAppButton>

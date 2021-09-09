@@ -1,6 +1,16 @@
 <template>
   <div class="text-justify">
-    <template v-if="isOffer">
+    <template v-if="isCreator && isOffer">
+      Vous proposez une séance de tutorat de
+      <strong>{{ subjectName }}</strong> d'une durée de
+      <strong>{{ formatedTime }}</strong
+      >.
+    </template>
+    <template v-else-if="isCreator && isDemand">
+      Vous avez besoin d'une séance de tutorat de
+      <strong>{{ subjectName }}</strong>
+    </template>
+    <template v-else-if="isOffer">
       <strong class="font-bold">
         {{ fullName }}
       </strong>
@@ -60,6 +70,10 @@ export default {
     userId: {
       type: Number,
       required: true,
+    },
+    isCreator: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
