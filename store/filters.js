@@ -58,12 +58,15 @@ export const getters = {
     filters: { tutorats: tutoratsFilters },
   }) {
     const searchParams = new URLSearchParams()
+    // Pagination
     for (const property in tutoratsPagination) {
       const value = tutoratsPagination[property]
       if (value) searchParams.append(property, value)
     }
+    // Filters
     for (const property in tutoratsFilters) {
       const value = tutoratsFilters[property]
+      // Check for different types of values
       if (Array.isArray(value) && value.length > 0)
         value.forEach((v) => searchParams.append(property, v))
       else if (typeof value === 'string' && value)

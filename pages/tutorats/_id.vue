@@ -1,130 +1,46 @@
 <template>
   <InsameeAppContainer class="mx-auto space-y-8 overflow-hidden" small>
-    <TutoratCardHeader
-      :type="tutorat.type"
-      :school-name="tutorat.school.name"
-      :subject-name="tutorat.subject.name"
-      :interested-count="tutorat.users_interested_count"
-    />
-    <TutoratCardProfile
-      class="justify-center"
-      :type="tutorat.type"
-      :current-role="tutorat.profile.current_role"
-      :last-name="tutorat.profile.last_name"
-      :first-name="tutorat.profile.first_name"
-    />
-    <div class="font-bold text-center">
-      {{ formatedTime }}
-    </div>
-    <section
-      class="max-w-md mx-auto space-y-8 relative mix-blend-multiply z-10"
+    <TutoratInformation :tutorat="tutorat" />
+    <TutoratActions :first-name="firstName" :is-offer="isOffer">
+      <template #graphic>
+        <div
+          class="
+            absolute
+            transform
+            -translate-x-1/2
+            left-1/2
+            -top-3/4
+            md:top-1/4
+            z-0
+            opacity-40
+          "
+        >
+          <GraphicOffer v-if="isOffer" />
+          <GraphicDemand v-else />
+        </div>
+      </template>
+    </TutoratActions>
+    <div
+      v-if="isCreator && isOffer && $fetchState.pending"
+      class="grid gap-4 lg:gap-8 grid-cols-1 md:grid-cols-2"
     >
-      <div v-if="tutorat.text" class="text-justify">{{ tutorat.text }}</div>
-      <TutoratTextSummary
-        :first-name="tutorat.profile.first_name"
-        :last-name="tutorat.profile.last_name"
-        :type="tutorat.type"
-        :subject-name="tutorat.subject.name"
-        :time="tutorat.time"
-        :email="tutorat.profile.user.email"
-        :user-id="tutorat.user_id"
+      <InsameeSkeletonCard
+        v-for="value in $store.state.filters.pagination.profiles.limit"
+        :key="value"
       />
-      <TutoratTextCount
-        :interested-count="tutorat.users_interested_count"
-        :type="tutorat.type"
-      />
-    </section>
-    <div class="relative">
-      <div
-        class="
-          absolute
-          transform
-          -translate-x-1/2
-          left-1/2
-          -top-3/4
-          md:top-1/4
-          z-0
-        "
-      >
-        <GraphicOffer v-if="isOffer" />
-        <GraphicDemand v-else />
-      </div>
-      <div
-        class="flex flex-col md:flex-row justify-evenly items-center relative"
-      >
-        <InsameeAppButton
-          border
-          large
-          shadow
-          :variant="isOffer ? 'primary' : 'secondary'"
-          @click="dialogContact = true"
-        >
-          Contacter {{ firstName }}
-        </InsameeAppButton>
-        <Interested v-slot="{ on, interested, loading }">
-          <InsameeAppButton
-            :variant="isOffer ? 'primary' : 'secondary'"
-            class="mt-4 md:mt-0"
-            large
-            shadow
-            :border="interested"
-            :disabled="loading"
-            :loading="loading"
-            v-on="on"
-          >
-            {{
-              interested
-                ? 'Je ne suis plus intéréssé(e)'
-                : 'Je suis intéressé(e)'
-            }}
-          </InsameeAppButton>
-        </Interested>
-        <!-- TODO: ça doit devenir son propre composant pour avoir un fetch -->
-        <!-- <template v-if="profile.user_id === tutorat.user_id">
-          <div class="space-x-4 flex flex-row">
-            <InsameeAppButton
-              variant="negative"
-              class="z-10"
-              :disabled="deleting"
-              :loading="deleting"
-              @click="deleteTutorat"
-            >
-              Supprimer
-            </InsameeAppButton>
-            <InsameeAppButton
-              class="z-10"
-              :variant="isDemand(tutorat.type) ? 'secondary' : 'primary'"
-              @click="editTutorat = true"
-            >
-              Editer
-            </InsameeAppButton>
-          </div>
-        </template> -->
-        <!-- <InsameeAppButton
-          class="z-10"
-          :variant="isDemand(tutorat.type) ? 'secondary' : 'primary'"
-          :to="{
-            name: 'mee-id',
-            params: {
-              id: tutorat.user_id,
-            },
-          }"
-        >
-          Contacter {{ tutorat.profile.first_name }}
-        </InsameeAppButton> -->
-      </div>
-      <Report
-        v-slot="{ on }"
-        type="tutorats"
-        class="mt-4 relative mix-blend-multiply"
-      >
-        <InsameeAppButton empty variant="grey-secondary" v-on="on">
-          Signaler le tutorat
-        </InsameeAppButton>
-      </Report>
     </div>
-
-    <!-- <InsameeAppError :error-message="errorMessage" class="text-center" /> -->
+    <InsameeAppError
+      v-else-if="isCreator && isOffer && $fetchState.error"
+      :error-message="errorMessage"
+    />
+    <TutoratProfiles
+      v-else-if="isCreator && isOffer"
+      :profiles="profiles"
+      :pagination="pagination"
+      :tutorat-type="tutorat.type"
+      class="relative"
+      @pagination="refreshProfilesPagination"
+    />
     <Portal v-if="dialogContact">
       <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
         <InsameeAppCard>
@@ -137,22 +53,6 @@
         </InsameeAppCard>
       </InsameeAppModal>
     </Portal>
-    <!-- <InsameeAppModal
-      v-slot="{ size }"
-      v-model="editTutorat"
-      v-scroll-lock="editTutorat"
-      @outside="editTutorat = false"
-    >
-      <EditTutoratForm
-        :class="size"
-        :tutorat-text="tutorat.text"
-        :tutorat-time="tutorat.time"
-        :tutorat-id="tutorat.id"
-        :type="tutorat.type"
-        @close="editTutorat = false"
-        @refresh="refresh"
-      />
-    </InsameeAppModal> -->
   </InsameeAppContainer>
 </template>
 
@@ -175,22 +75,27 @@ export default {
   data() {
     return {
       dialogContact: false,
-      errorMessage: '',
       editTutorat: false,
       deleting: false,
+      profiles: [],
+      pagination: {},
     }
   },
+  async fetch() {
+    if (!this.isCreator || !this.isOffer) return
+
+    const id = this.tutorat.id
+    const query = this.$store.getters['filters/getProfilesSearchParams']
+    const path = `/api/v1/tutorats/${id}/interested/profiles?${query}`
+
+    const { data } = await this.$axios.get(path)
+
+    this.profiles = data.data
+    this.pagination = data.meta
+  },
+
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
-    formatedTime() {
-      if (this.tutorat.time) {
-        const hours = Math.floor(this.tutorat.time / 60)
-        const minutes = this.tutorat.time % 60
-        return `${hours}h${minutes !== 0 ? minutes : ''}`
-      } else {
-        return undefined
-      }
-    },
     firstName() {
       return this.tutorat.profile.first_name ?? ''
     },
@@ -208,26 +113,46 @@ export default {
     isDemand() {
       return this.tutorat.type === 'demande'
     },
+    isCreator() {
+      return this.tutorat.user_id === this.tutorat.profile.user_id
+    },
+    errorMessage() {
+      return "Une error est survenue dans le chargement des profils. Si l'erreur persiste, n'hésitez pas à nous contacter"
+    },
+  },
+  watch: {
+    '$route.query'() {
+      this.parseUrl()
+      this.$fetch()
+    },
+  },
+  beforeMount() {
+    this.parseUrl()
   },
   methods: {
-    refresh(data) {
-      this.editTutorat = false
-      this.tutorat = data
+    refreshProfilesPagination(value) {
+      this.$store.commit('filters/setPagination', {
+        pagination: 'profiles',
+        name: 'page',
+        value,
+      })
+      this.setRoute()
     },
-    async deleteTutorat() {
-      this.deleting = true
-      try {
-        await this.$axios.delete(`/api/v1/tutorats/${this.tutorat.id}`)
-        this.$router.push({
-          path: '/tutorats',
+    parseUrl() {
+      for (const query in this.$route.query) {
+        const value = this.$route.query[query]
+        this.$store.commit('filters/setPagination', {
+          pagination: 'profiles',
+          name: query,
+          value,
         })
-      } catch (error) {
-        const status = error.response.status
-        if (status === 404) {
-          this.errorMessage = "La ressource n'a pas été trouvée"
-        }
       }
-      this.deleting = false
+    },
+    setRoute() {
+      const query = this.$store.getters['filters/getProfilesSearchParams']
+      this.$router.push({
+        path: `/tutorats/${this.$route.params.id}?${query}`,
+      })
     },
   },
 }
