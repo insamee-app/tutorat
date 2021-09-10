@@ -1,6 +1,10 @@
 export const state = () => ({
   subjects: [],
   schools: [],
+  currentRoles: [
+    { id: 'étudiant', name: 'étudiant' },
+    { id: 'personnel', name: 'personnel' },
+  ],
   reasonsTutorats: [],
   reasonsProfiles: [],
 })
@@ -34,6 +38,12 @@ export const getters = {
     return state.schools.map((school) => ({
       text: school.name,
       value: school.id,
+    }))
+  },
+  currentRoles(state) {
+    return state.currentRoles.map((role) => ({
+      text: role.name,
+      value: role.id,
     }))
   },
   reasonsTutorats(state) {

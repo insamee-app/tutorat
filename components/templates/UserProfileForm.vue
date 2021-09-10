@@ -22,13 +22,21 @@
         autocomplete="given-name"
         label="Prénom"
       />
-      <AppSelect
-        v-model="$v.fieldsProfile.currentRole.$model"
-        name="currentRole"
-        :items="currentRoles"
-        label="Rôles"
-        choose-text
-      />
+      <InsameeLabeledItem
+        label="Le rôle"
+        variant="secondary"
+        class="mt-2"
+        class-name="text-base"
+      >
+        <InsameeSelect
+          :value="$v.fieldsProfile.currentRole.$model"
+          :dismiss-value="dismissSelect"
+          :items="$store.getters['data/currentRoles']"
+          placeholder="Sélectionner un rôle"
+          variant="primary"
+          @selected="$v.fieldsProfile.currentRole.$model = $event"
+        />
+      </InsameeLabeledItem>
       <InsameeLabeledInput
         v-model.number="$v.fieldsProfile.graduationYear.$model"
         :error-message="graduationYearMessage"
@@ -37,28 +45,51 @@
         autocomplete="year"
         label="Année de graduation"
       />
-      <div>
+      <!-- <div>
         <InsameeAppLabel
           name="preferredSubjects"
           label="Matières préférées"
           input
         />
-        <FetchMultiSelect
+        <ProfileSelect
           v-model="fieldsProfile.preferredSubjects"
           ressource="subjects"
         />
-      </div>
-      <div>
+      </div> -->
+      <InsameeLabeledItem label="Matières préférées" class-name="text-base">
+        <ComboboxMultiple
+          variant="primary"
+          placeholder="Selectionner une / des matières"
+          name="subjects"
+          :value="$v.fieldsProfile.preferredSubjects.$model"
+          @selected="$v.fieldsProfile.preferredSubjects.$model = $event"
+          @update="updateCombobox('preferredSubjects')"
+        />
+      </InsameeLabeledItem>
+      <InsameeLabeledItem
+        label="Matières en difficultées"
+        class-name="text-base"
+      >
+        <ComboboxMultiple
+          variant="primary"
+          placeholder="Selectionner une / des matières"
+          name="subjects"
+          :value="$v.fieldsProfile.difficultiesSubjects.$model"
+          @selected="$v.fieldsProfile.difficultiesSubjects.$model = $event"
+          @update="updateCombobox('difficultiesSubjects')"
+        />
+      </InsameeLabeledItem>
+      <!-- <div>
         <InsameeAppLabel
           name="difficultiesSubjects"
           label="Matières en difficultées"
           input
         />
-        <FetchMultiSelect
+        <ProfileSelect
           v-model="fieldsProfile.difficultiesSubjects"
           ressource="subjects"
         />
-      </div>
+      </div> -->
       <InsameeLabeledTextarea
         v-model="$v.fieldsProfile.text.$model"
         name="description"
@@ -113,10 +144,22 @@
 </template>
 
 <script>
-import { numeric, between, maxLength, url } from 'vuelidate/lib/validators'
+import {
+  numeric,
+  between,
+  maxLength,
+  url,
+  helpers,
+} from 'vuelidate/lib/validators'
 import { mapState } from 'vuex'
 
 const date = new Date()
+
+// Used to check if a value is in the item
+const mustContain = (value) => {
+  const regex = new RegExp(value, 'i')
+  return helpers.regex('mustContain', regex)
+}
 
 export default {
   name: 'UserProfileForm',
@@ -133,7 +176,7 @@ export default {
       fieldsProfile: {
         lastName: '',
         firstName: '',
-        currentRole: '',
+        currentRole: {},
         text: '',
         mobile: '',
         preferredSubjects: [],
@@ -166,15 +209,17 @@ export default {
       graduationYear: {
         between: between(1957, date.getFullYear() + 5),
       },
-      // TODO: ajouter une regex pour vérifier que c'est bien une lien de là et il faut faire de même pour le serveur
       urlFacebook: {
         url,
+        mustContain: mustContain('facebook'),
       },
       urlInstagram: {
         url,
+        mustContain: mustContain('instagram'),
       },
       urlTwitter: {
         url,
+        mustContain: mustContain('twitter'),
       },
     },
   },
@@ -188,12 +233,17 @@ export default {
       Object.assign(profile, this.fieldsProfile)
 
       profile.preferredSubjects = this.fieldsProfile.preferredSubjects.map(
-        (subject) => subject.id
+        (subject) => subject.value
       )
       profile.difficultiesSubjects =
-        this.fieldsProfile.difficultiesSubjects.map((subject) => subject.id)
+        this.fieldsProfile.difficultiesSubjects.map((subject) => subject.value)
+
+      profile.currentRole = profile.currentRole.value
 
       return profile
+    },
+    dismissSelect() {
+      return this.fieldsProfile.currentRole.value ?? ''
     },
     lastNameMessage() {
       if (!this.$v.fieldsProfile.lastName.$dirty) return ''
@@ -233,6 +283,9 @@ export default {
       if (!this.$v.fieldsProfile.urlFacebook.url)
         return "Vous devez saisir l'url de votre profil"
 
+      if (!this.$v.fieldsProfile.urlFacebook.mustContain)
+        return 'Vous devez saisir une url provenant de Facebook'
+
       return ''
     },
     instagramMessage() {
@@ -241,6 +294,9 @@ export default {
       if (!this.$v.fieldsProfile.urlInstagram.url)
         return "Vous devez saisir l'url de votre profil"
 
+      if (!this.$v.fieldsProfile.urlInstagram.mustContain)
+        return "Vous devez saisir une url provenant d'Instagram"
+
       return ''
     },
     twitterMessage() {
@@ -248,6 +304,9 @@ export default {
 
       if (!this.$v.fieldsProfile.urlTwitter.url)
         return "Vous devez saisir l'url de votre profil"
+
+      if (!this.$v.fieldsProfile.urlTwitter.mustContain)
+        return 'Vous devez saisir une url provenant de Twitter'
 
       return ''
     },
@@ -268,8 +327,20 @@ export default {
       this.fieldsProfile,
       this.$store.getters['auth/toUpdateProfile']
     )
+
+    const profileData = this.$store.getters['auth/currentRole']
+    const data = this.$store.getters['data/currentRoles']
+    this.fieldsProfile.currentRole =
+      data.find((el) => el.value === profileData) ?? {}
   },
   methods: {
+    updateCombobox(name) {
+      const profileData = this.$store.getters[`auth/${name}`]
+      const data = this.$store.getters[`data/subjects`]
+      this.$v.fieldsProfile[name].$model = data.filter((el) =>
+        profileData.includes(el.value)
+      )
+    },
     async sendUser() {
       this.loading = true
       try {

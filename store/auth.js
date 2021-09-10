@@ -39,14 +39,24 @@ export const getters = {
       lastName: profile.last_name ?? '',
       firstName: profile.first_name ?? '',
       currentRole: profile.current_role ?? '',
-      text: profile.tutoratProfile.text ?? '',
+      text: profile.tutorat_profile.text ?? '',
       mobile: profile.mobile ?? '',
-      preferredSubjects: profile.tutoratProfile?.preferredSubjects ?? [],
-      difficultiesSubjects: profile.tutoratProfile?.difficultiesSubjects ?? [],
+      preferredSubjects: profile.tutorat_profile?.preferred_subjects ?? [],
+      difficultiesSubjects:
+        profile.tutorat_profile?.difficulties_subjects ?? [],
       graduationYear: profile.graduation_year ?? '',
       urlFacebook: profile.url_facebook ?? '',
       urlInstagram: profile.url_instagram ?? '',
       urlTwitter: profile.url_twitter ?? '',
     }
+  },
+  preferredSubjects({ profile }) {
+    return profile.tutorat_profile.preferred_subjects.map((el) => el.id)
+  },
+  difficultiesSubjects({ profile }) {
+    return profile.tutorat_profile.difficulties_subjects.map((el) => el.id)
+  },
+  currentRole({ profile }) {
+    return profile.current_role
   },
 }

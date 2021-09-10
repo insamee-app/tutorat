@@ -1,24 +1,21 @@
 <template>
-  <div>
-    <InsameeAppContainer class="max-w-4xl mx-auto">
-      <h1 class="text-xl font-bold mt-4">Mon Profil</h1>
-      <InsameeTutoratProfile
-        class="mt-4"
-        :last-name="profile.last_name"
-        :first-name="profile.first_name"
-        :email="profile.user.email"
-        :school-name="profile.school.name"
-        :graduation-year="profile.graduation_year"
-        :current-role="profile.current_role"
-        :avatar-url="profile.avatarUrl"
-        :text="profile.tutoratProfile.text"
-        :preferred-subjects="getTexts(profile.tutoratProfile.preferredSubjects)"
-        :difficulties-subjects="
-          getTexts(profile.tutoratProfile.difficultiesSubjects)
-        "
-      >
-        <InsameeProfileContact :links="socials" />
-        <!-- <InsameeLabeledItem label="Mes demandes et mes offres">
+  <InsameeAppContainer class="max-w-4xl mx-auto">
+    <InsameeTutoratProfile
+      :last-name="profile.last_name"
+      :first-name="profile.first_name"
+      :email="profile.user.email"
+      :school-name="profile.school.name"
+      :graduation-year="profile.graduation_year"
+      :current-role="profile.current_role"
+      :avatar-url="profile.avatarUrl"
+      :text="profile.tutorat_profile.text"
+      :preferred-subjects="getTexts(profile.tutorat_profile.preferred_subjects)"
+      :difficulties-subjects="
+        getTexts(profile.tutorat_profile.difficulties_subjects)
+      "
+    >
+      <InsameeProfileContact :links="socials" />
+      <!-- <InsameeLabeledItem label="Mes demandes et mes offres">
           <section class="space-y-4">
             <div class="flex flex-row w-full pt-4 justify-evenly">
               <InsameeAppButton
@@ -98,28 +95,27 @@
             </InsameeResponsiveListCards>
           </section>
         </InsameeLabeledItem> -->
-      </InsameeTutoratProfile>
-      <!-- <section class="flex justify-between sticky bottom-4 mt-8">
-        <InsameeAppButton large @click="createTutorat = true">
+    </InsameeTutoratProfile>
+    <section class="flex justify-end sticky bottom-4 mt-8">
+      <!-- <InsameeAppButton large @click="createTutorat = true">
           Créer un tutorat
-        </InsameeAppButton>
-        <InsameeAppButton large @click="editProfile = true">
-          Editer le profil
-        </InsameeAppButton>
-      </section> -->
-      <section>
-        <h2 class="text-xl font-bold mt-8">Paramètre du compte</h2>
-        <div class="text-center mt-4">
-          <InsameeAppLink :link="`${$config.insameeURL}/mee`">
-            Se rendre sur mon profil principal
-          </InsameeAppLink>
-        </div>
-      </section>
-    </InsameeAppContainer>
+        </InsameeAppButton> -->
+      <InsameeAppButton shadow border large @click="editProfile = true">
+        Editer le profil
+      </InsameeAppButton>
+    </section>
+    <section>
+      <h2 class="text-xl font-bold mt-8">Paramètre du compte</h2>
+      <div class="text-center mt-4">
+        <InsameeAppLink :link="`${$config.insameeURL}/mee`">
+          Se rendre sur insamee.fr
+        </InsameeAppLink>
+      </div>
+    </section>
     <InsameeAppModal
       v-slot="{ size }"
-      v-model="editProfile"
-      v-scroll-lock="editProfile"
+      :value="editProfile"
+      overflow
       @outside="editProfile = false"
     >
       <UserProfileForm
@@ -128,15 +124,7 @@
         @close="editProfile = false"
       />
     </InsameeAppModal>
-    <InsameeAppModal
-      v-slot="{ size }"
-      v-model="createTutorat"
-      v-scroll-lock="createTutorat"
-      @outside="createTutorat = false"
-    >
-      <CreateTutoratForm :class="size" @close="createTutorat = false" />
-    </InsameeAppModal>
-  </div>
+  </InsameeAppContainer>
 </template>
 
 <script>

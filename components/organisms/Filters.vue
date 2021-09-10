@@ -36,21 +36,6 @@
         @selected="filters.time = $event"
       />
     </InsameeLabeledItem>
-    <!-- Il faut faire les 2 boutons pour celui là -->
-    <!-- <InsameeLabeledItem
-      class="mt-2"
-      label="Type"
-      variant="secondary"
-      class-name="text-base"
-    >
-      <InsameeSelect
-        :value="type"
-        dismiss-value
-        placeholder="Type du tutorat"
-        :items="itemsType"
-        @selected="type = $event"
-      />
-    </InsameeLabeledItem> -->
     <InsameeLabeledItem
       class="mt-2"
       label="Rôle du tuteur"
@@ -72,7 +57,7 @@
       class="mt-2"
       class-name="text-base"
     >
-      <FiltersComboboxMultiple
+      <ComboboxMultiple
         name="subjects"
         variant="secondary"
         placeholder="Sélectionner une / des matières"
@@ -87,7 +72,7 @@
       class="mt-2"
       class-name="text-base"
     >
-      <FiltersComboboxMultiple
+      <ComboboxMultiple
         name="schools"
         variant="secondary"
         placeholder="Sélectionner une / des écoles"
