@@ -7,9 +7,19 @@ export const state = () => ({
     tutorats: {
       page: 1,
     },
+    tutoratsOffers: {
+      page: 1,
+    },
   },
   filters: {
     tutorats: {
+      time: 0,
+      'schools[]': [],
+      'subjects[]': '',
+      type: '',
+      currentRole: '',
+    },
+    tutoratsOffers: {
       time: 0,
       'schools[]': [],
       'subjects[]': '',
@@ -33,8 +43,8 @@ export const mutations = {
       else state.filters[filter][name] = value
     }
   },
-  resetFilters(state) {
-    state.filters.tutorats = {
+  resetFilters(state, value) {
+    state.filters[value] = {
       time: 0,
       'schools[]': [],
       'subjects[]': '',
@@ -54,6 +64,31 @@ export const getters = {
     const searchParams = new URLSearchParams(data)
     return searchParams.toString()
   },
+  getSearchParams:
+    ({ pagination, filters }) =>
+    (value) => {
+      const itemsPagination = pagination[value]
+      const itemsFilters = filters[value]
+      const searchParams = new URLSearchParams()
+      // Pagination
+      for (const property in itemsPagination) {
+        const value = itemsPagination[property]
+        if (value) searchParams.append(property, value)
+      }
+      // Filters
+      for (const property in itemsFilters) {
+        const value = itemsFilters[property]
+        // Check for different types of values
+        if (Array.isArray(value) && value.length > 0)
+          value.forEach((v) => searchParams.append(property, v))
+        else if (typeof value === 'string' && value)
+          searchParams.append(property, value)
+        else if (typeof value === 'number' && value)
+          searchParams.append(property, value)
+      }
+      return searchParams.toString()
+    },
+
   getTutoratsSearchParams({
     pagination: { tutorats: tutoratsPagination },
     filters: { tutorats: tutoratsFilters },
