@@ -5,6 +5,9 @@
     :total-pagination="paginationTotal"
     :loading="$fetchState.pending"
   >
+    <template #title>
+      <h1 class="text-lg font-bold">Mes tutorats</h1>
+    </template>
     <template #filters-full="{ classNames }">
       <FiltersCard :class="classNames" @submit="refreshFilters" />
     </template>
