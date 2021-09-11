@@ -96,8 +96,12 @@
 <script>
 import { mapState } from 'vuex'
 import getTexts from '@/mixins/getTexts'
+import { Portal } from '@linusborg/vue-simple-portal'
 
 export default {
+  components: {
+    Portal,
+  },
   mixins: [getTexts],
   middleware: 'authenticated',
   data() {
