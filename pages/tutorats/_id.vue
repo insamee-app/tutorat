@@ -5,6 +5,7 @@
       :first-name="firstName"
       :is-offer="isOffer"
       :is-creator="isCreator"
+      :socials="socials"
     >
       <template #graphic>
         <div
@@ -48,29 +49,13 @@
         @pagination="refreshProfilesPagination"
       />
     </div>
-    <Portal v-if="dialogContact">
-      <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
-        <InsameeAppCard>
-          <InsameeAppCardHeader closable @close="dialogContact = false">
-            <InsameeAppCardTitle>
-              Contacter {{ firstName }}
-            </InsameeAppCardTitle>
-          </InsameeAppCardHeader>
-          <InsameeAppContact :links="socials" />
-        </InsameeAppCard>
-      </InsameeAppModal>
-    </Portal>
   </InsameeAppContainer>
 </template>
 
 <script>
-import { Portal } from '@linusborg/vue-simple-portal'
 import { mapState } from 'vuex'
 
 export default {
-  components: {
-    Portal,
-  },
   middleware: 'authenticated',
   async asyncData({ $axios, params }) {
     const { data } = await $axios.get(
@@ -81,9 +66,6 @@ export default {
   },
   data() {
     return {
-      dialogContact: false,
-      editTutorat: false,
-      deleting: false,
       profiles: [],
       pagination: {},
     }
