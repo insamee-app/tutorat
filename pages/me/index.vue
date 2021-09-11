@@ -23,6 +23,14 @@
       </InsameeAppButton>
     </section>
     <section class="space-y-4">
+      <h2 class="text-xl font-bold">Les tutorats</h2>
+      <div class="flex flex-col items-end space-y-4">
+        <InsameeAppButton border large :to="{ name: 'me-tutorats' }">
+          Mes tutorats
+        </InsameeAppButton>
+      </div>
+    </section>
+    <section class="space-y-4">
       <h2 class="text-xl font-bold">Paramètre du compte</h2>
       <div class="text-center space-y-4">
         <InsameeAppLink :link="`${$config.insameeURL}/mee`">
