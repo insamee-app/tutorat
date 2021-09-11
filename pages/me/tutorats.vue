@@ -105,8 +105,7 @@ export default {
     }
   },
   async fetch() {
-    const query =
-      this.$store.getters['filters/getSearchParams']('tutoratsOffers')
+    const query = this.$store.getters['filters/getSearchParams']('tutoratsMy')
     const path = `/api/v1/profiles/${this.profile.user_id}/tutorats?${query}`
 
     const { data } = await this.$axios.get(path)
@@ -142,17 +141,17 @@ export default {
   },
   methods: {
     parseUrl() {
-      this.$store.commit('filters/resetFilters', 'tutoratsOffers')
+      this.$store.commit('filters/resetFilters', 'tutoratsMy')
       for (const query in this.$route.query) {
         const value = this.$route.query[query]
         this.$store.commit('filters/setPagination', {
-          pagination: 'tutoratsOffers',
+          pagination: 'tutoratsMy',
           name: query,
           value,
         })
 
         this.$store.commit('filters/setFilters', {
-          filter: 'tutoratsOffers',
+          filter: 'tutoratsMy',
           name: query,
           // With one number, *[] value is a single value and not an array, so we need to convert it
           value:
@@ -162,7 +161,7 @@ export default {
     },
     refreshPagination(value) {
       this.$store.commit('filters/setPagination', {
-        pagination: 'tutoratsOffers',
+        pagination: 'tutoratsMy',
         name: 'page',
         value,
       })
@@ -173,7 +172,7 @@ export default {
       for (const iterator in data) {
         const value = data[iterator]
         this.$store.commit('filters/setFilters', {
-          filter: 'tutoratsOffers',
+          filter: 'tutoratsMy',
           name: iterator,
           value,
         })
@@ -181,8 +180,7 @@ export default {
       this.setRoute()
     },
     setRoute() {
-      const query =
-        this.$store.getters['filters/getSearchParams']('tutoratsOffers')
+      const query = this.$store.getters['filters/getSearchParams']('tutoratsMy')
       this.$router.push({
         path: `/me/tutorats?${query}`,
       })

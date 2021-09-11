@@ -40,6 +40,7 @@
       />
       <TutoratProfiles
         v-else-if="isOffer"
+        :title="tutorat.subject.name"
         :profiles="profiles"
         :pagination="pagination"
         :tutorat-type="tutorat.type"

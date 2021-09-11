@@ -7,7 +7,7 @@ export const state = () => ({
     tutorats: {
       page: 1,
     },
-    tutoratsOffers: {
+    tutoratsMy: {
       page: 1,
     },
   },
@@ -19,7 +19,7 @@ export const state = () => ({
       type: '',
       currentRole: '',
     },
-    tutoratsOffers: {
+    tutoratsMy: {
       time: 0,
       'schools[]': [],
       'subjects[]': '',

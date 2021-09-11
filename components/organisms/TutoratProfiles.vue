@@ -6,7 +6,7 @@
     >
       <span class="text-lg"> Profils Intéréssés </span>
       <client-only>
-        <TutoratProfilesContact :is-offer="isOffer" />
+        <TutoratProfilesContact :is-offer="isOffer" :title="title" />
       </client-only>
     </div>
     <template v-if="pagination.total">
@@ -87,6 +87,10 @@ export default {
     pagination: {
       type: Object,
       default: undefined,
+    },
+    title: {
+      type: String,
+      default: '',
     },
   },
   computed: {

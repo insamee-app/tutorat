@@ -6,6 +6,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    title: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -31,13 +35,16 @@ export default {
     variant() {
       return this.isOffer ? 'primary' : 'secondary'
     },
+    mailto() {
+      return `${this.contact}?subject=Tutorat%20:%20${this.title.toUpperCase()}`
+    },
   },
 }
 </script>
 
 <template>
   <InsameeAppButton
-    :href="contact"
+    :href="mailto"
     :loading="$fetchState.pending"
     :variant="variant"
     :disabled="$fetchState.pending || $fetchState.error"
