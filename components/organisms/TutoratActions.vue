@@ -33,7 +33,7 @@ export default {
 </script>
 
 <template>
-  <section class="relative">
+  <section class="relative space-y-8">
     <slot name="graphic"></slot>
     <div
       v-if="!isCreator"
@@ -65,7 +65,7 @@ export default {
         </InsameeAppButton>
       </Interested>
     </div>
-    <Report v-if="!isCreator" v-slot="{ on }" type="tutorats" class="mt-4">
+    <Report v-if="!isCreator" v-slot="{ on }" type="tutorats">
       <InsameeAppButton empty variant="grey-secondary" v-on="on">
         Signaler le tutorat
       </InsameeAppButton>

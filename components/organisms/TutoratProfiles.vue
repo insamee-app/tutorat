@@ -6,7 +6,11 @@
     >
       <span class="text-lg"> Profils Intéréssés </span>
       <client-only>
-        <TutoratProfilesContact :is-offer="isOffer" :title="title" />
+        <TutoratProfilesContact
+          v-if="profiles.length"
+          :is-offer="isOffer"
+          :title="title"
+        />
       </client-only>
     </div>
     <template v-if="pagination.total">
