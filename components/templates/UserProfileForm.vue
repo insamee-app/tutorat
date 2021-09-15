@@ -45,17 +45,6 @@
         autocomplete="year"
         label="Année de graduation"
       />
-      <!-- <div>
-        <InsameeAppLabel
-          name="preferredSubjects"
-          label="Matières préférées"
-          input
-        />
-        <ProfileSelect
-          v-model="fieldsProfile.preferredSubjects"
-          ressource="subjects"
-        />
-      </div> -->
       <InsameeLabeledItem label="Matières préférées" class-name="text-base">
         <ComboboxMultiple
           variant="primary"
@@ -79,17 +68,6 @@
           @update="updateCombobox('difficultiesSubjects')"
         />
       </InsameeLabeledItem>
-      <!-- <div>
-        <InsameeAppLabel
-          name="difficultiesSubjects"
-          label="Matières en difficultées"
-          input
-        />
-        <ProfileSelect
-          v-model="fieldsProfile.difficultiesSubjects"
-          ressource="subjects"
-        />
-      </div> -->
       <InsameeLabeledTextarea
         v-model="$v.fieldsProfile.text.$model"
         name="description"

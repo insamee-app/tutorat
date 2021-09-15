@@ -5,6 +5,25 @@ export const state = () => ({
     { id: 'étudiant', name: 'étudiant' },
     { id: 'personnel', name: 'personnel' },
   ],
+  types: [
+    { id: 'offre', name: 'offre' },
+    { id: 'demande', name: 'demande' },
+  ],
+  siting: [
+    { id: 'en présence', name: 'en présence' },
+    { id: 'à distance', name: 'à distance' },
+  ],
+  time: [
+    ...Array(6)
+      .fill(0)
+      .map((_, i) => {
+        const time = String((i + 1) * 30)
+        return {
+          id: time,
+          name: time,
+        }
+      }),
+  ],
   reasonsTutorats: [],
   reasonsProfiles: [],
 })
@@ -44,6 +63,24 @@ export const getters = {
     return state.currentRoles.map((role) => ({
       text: role.name,
       value: role.id,
+    }))
+  },
+  types(state) {
+    return state.types.map((type) => ({
+      text: type.name,
+      value: type.id,
+    }))
+  },
+  siting(state) {
+    return state.siting.map((s) => ({
+      text: s.name,
+      value: s.id,
+    }))
+  },
+  time(state) {
+    return state.time.map((t) => ({
+      text: t.name,
+      value: t.id,
     }))
   },
   reasonsTutorats(state) {

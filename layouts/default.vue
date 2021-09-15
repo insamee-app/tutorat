@@ -29,6 +29,10 @@ export default {
     navList() {
       const nav = [
         {
+          name: 'Créer un tutorat',
+          to: { name: 'tutorats-create' },
+        },
+        {
           name: 'Le concept',
           to: { name: 'concept' },
         },
