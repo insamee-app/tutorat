@@ -1,14 +1,19 @@
 <script>
-import { required, maxLength } from 'vuelidate/lib/validators'
-import requiredIf from 'vuelidate/lib/validators/requiredIf'
+import { required, maxLength, requiredIf } from 'vuelidate/lib/validators'
 
 export default {
   name: 'TutoratForm',
+  props: {
+    tutorat: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
       errors: [],
       loading: false,
-      tutorat: {
+      editedTutorat: {
         school: {},
         subject: {},
         type: {},
@@ -19,51 +24,97 @@ export default {
     }
   },
   computed: {
+    buttonText() {
+      return this.tutorat ? 'Editer le tutorat' : 'Créer le tutorat'
+    },
     textMessage() {
-      if (!this.$v.tutorat.text.$dirty) return ''
+      if (!this.$v.editedTutorat.text.$dirty) return ''
 
-      if (!this.$v.tutorat.text.maxLength)
+      if (!this.$v.editedTutorat.text.maxLength)
         return 'Votre description est trop longue'
 
       return ''
     },
     isOffer() {
-      return this.tutorat.type.value === 'offre'
+      return this.editedTutorat.type.value === 'offre'
+    },
+    isEdit() {
+      return !!this.tutorat
     },
     variant() {
       return this.isOffer ? 'primary' : 'secondary'
     },
   },
+  mounted() {
+    if (this.tutorat) {
+      this.editedTutorat = Object.assign(this.editedTutorat, this.tutorat)
+      if (this.tutorat.type) {
+        const typesData = this.$store.getters['data/types']
+        this.editedTutorat.type = typesData.find(
+          (type) => type.value === this.tutorat.type
+        )
+      }
+      if (this.tutorat.time) {
+        const timeData = this.$store.getters['data/time']
+        this.editedTutorat.time = timeData.find(
+          (time) => time.value === String(this.tutorat.time)
+        )
+      }
+      if (this.tutorat.siting) {
+        const sitingData = this.$store.getters['data/siting']
+        this.editedTutorat.siting = sitingData.find(
+          (siting) => siting.value === this.tutorat.siting
+        )
+      }
+    }
+  },
   methods: {
     transformedTutorat() {
-      const tutorat = {
-        school: this.tutorat.school.value,
-        subject: this.tutorat.subject.value,
-        text: this.tutorat.text,
-        type: this.tutorat.type.value,
-        siting: this.tutorat.siting.value,
-        time: this.tutorat.time.value,
+      const editedTutorat = {
+        school: this.editedTutorat.school.value,
+        subject: this.editedTutorat.subject.value,
+        text: this.editedTutorat.text,
+        type: this.editedTutorat.type.value,
+        siting: this.editedTutorat.siting.value,
+        time: this.editedTutorat.time.value,
       }
 
-      return tutorat
+      return editedTutorat
     },
     async send() {
       if (!this.$v.$invalid) {
-        const tutorat = this.transformedTutorat()
-
+        const editedTutorat = this.transformedTutorat()
+        const url = '/api/v1/tutorats'
         this.loading = true
         try {
-          const response = await this.$axios.post('/api/v1/tutorats', tutorat)
-          this.$emit('success', response.data)
+          if (this.tutorat) {
+            const response = await this.$axios.patch(
+              url + '/' + this.tutorat.id + '?platform=tutorat',
+              editedTutorat
+            )
+            this.$emit('success', response.data)
+          } else {
+            const response = await this.$axios.post(url, editedTutorat)
+            this.$emit('success', response.data)
+          }
         } catch (error) {
           this.errors = error.response.data.errors
         }
         this.loading = false
       }
     },
+    updateSimpleSelect(name) {
+      if (this.tutorat) {
+        const smallName = name.slice(0, -1)
+        const data = this.$store.getters[`data/${name}`]
+        this.editedTutorat[smallName] = data.find(
+          (el) => el.value === this.tutorat[smallName].id
+        )
+      }
+    },
   },
   validations: {
-    tutorat: {
+    editedTutorat: {
       school: {
         required,
       },
@@ -96,22 +147,25 @@ export default {
       class-name="text-base"
     >
       <InsameeSelect
-        :value="$v.tutorat.type.$model"
-        :dismiss-value="tutorat.type.id"
+        :disabled="isEdit"
+        :value="$v.editedTutorat.type.$model"
+        :dismiss-value="editedTutorat.type.value"
         :items="$store.getters['data/types']"
         placeholder="Sélectionner un type"
         :variant="variant"
-        @selected="$v.tutorat.type.$model = $event"
+        @selected="$v.editedTutorat.type.$model = $event"
       />
     </InsameeLabeledItem>
     <InsameeLabeledItem label="Le sujet" class-name="text-base">
       <SimpleSelect
-        :value="$v.tutorat.subject.$model"
-        :dismiss-value="tutorat.subject.text"
+        :disabled="isEdit"
+        :value="$v.editedTutorat.subject.$model"
+        :dismiss-value="editedTutorat.subject.text"
         placeholder="Sélectionner un sujet"
         name="subjects"
         :variant="variant"
-        @selected="$v.tutorat.subject.$model = $event"
+        @selected="$v.editedTutorat.subject.$model = $event"
+        @update="updateSimpleSelect"
       />
     </InsameeLabeledItem>
     <InsameeLabeledItem
@@ -122,12 +176,12 @@ export default {
       class-name="text-base"
     >
       <InsameeSelect
-        :value="$v.tutorat.time.$model"
-        :dismiss-value="tutorat.time.id"
+        :value="$v.editedTutorat.time.$model"
+        :dismiss-value="editedTutorat.time.value"
         :items="$store.getters['data/time']"
         placeholder="Sélectionner une durée"
         :variant="variant"
-        @selected="$v.tutorat.time.$model = $event"
+        @selected="$v.editedTutorat.time.$model = $event"
       />
     </InsameeLabeledItem>
     <InsameeLabeledItem
@@ -138,26 +192,28 @@ export default {
       class-name="text-base"
     >
       <InsameeSelect
-        :value="$v.tutorat.siting.$model"
-        :dismiss-value="tutorat.siting.id"
+        :value="$v.editedTutorat.siting.$model"
+        :dismiss-value="editedTutorat.siting.value"
         :items="$store.getters['data/siting']"
         placeholder="Sélectionner un lieu"
         :variant="variant"
-        @selected="$v.tutorat.siting.$model = $event"
+        @selected="$v.editedTutorat.siting.$model = $event"
       />
     </InsameeLabeledItem>
     <InsameeLabeledItem label="L'école" class-name="text-base">
       <SimpleSelect
-        :value="$v.tutorat.school.$model"
-        :dismiss-value="tutorat.school.text"
+        :disabled="isEdit"
+        :value="$v.editedTutorat.school.$model"
+        :dismiss-value="editedTutorat.school.text"
         placeholder="Sélectionner une école"
         name="schools"
         :variant="variant"
-        @selected="$v.tutorat.school.$model = $event"
+        @selected="$v.editedTutorat.school.$model = $event"
+        @update="updateSimpleSelect"
       />
     </InsameeLabeledItem>
     <InsameeLabeledTextarea
-      v-model="$v.tutorat.text.$model"
+      v-model="$v.editedTutorat.text.$model"
       name="description"
       placeholder="Description"
       :error-message="textMessage"
@@ -171,7 +227,7 @@ export default {
         :disabled="$v.$invalid"
         :variant="variant"
       >
-        Créer le tutorat
+        {{ buttonText }}
       </InsameeAppButton>
     </div>
     <InsameeAppListError :errors="errors" full />

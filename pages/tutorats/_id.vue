@@ -1,6 +1,9 @@
 <template>
   <InsameeAppContainer class="mx-auto space-y-8 overflow-hidden" small>
     <TutoratInformation :tutorat="tutorat" :is-creator="isCreator" />
+    <div v-if="isCreator" class="flex justify-end">
+      <InsameeAppButton @click="editDialog = true">Editer </InsameeAppButton>
+    </div>
     <TutoratActions
       :first-name="firstName"
       :is-offer="isOffer"
@@ -49,13 +52,31 @@
         @pagination="refreshProfilesPagination"
       />
     </div>
+    <Portal v-if="editDialog">
+      <InsameeAppModal
+        overflow
+        :value="editDialog"
+        @outside="editDialog = false"
+      >
+        <TutoratFormCard
+          closable
+          :tutorat="tutorat"
+          @close="editDialog = false"
+          @success="updateTutorat"
+        />
+      </InsameeAppModal>
+    </Portal>
   </InsameeAppContainer>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import { Portal } from '@linusborg/vue-simple-portal'
 
 export default {
+  components: {
+    Portal,
+  },
   middleware: 'authenticated',
   async asyncData({ $axios, params }) {
     const { data } = await $axios.get(
@@ -68,6 +89,7 @@ export default {
     return {
       profiles: [],
       pagination: {},
+      editDialog: false,
     }
   },
   async fetch() {
@@ -118,6 +140,10 @@ export default {
     this.parseUrl()
   },
   methods: {
+    updateTutorat(tutorat) {
+      this.editDialog = false
+      this.tutorat = Object.assign({}, tutorat)
+    },
     refreshProfilesPagination(value) {
       this.$store.commit('filters/setPagination', {
         pagination: 'profiles',

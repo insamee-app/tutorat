@@ -8,6 +8,7 @@
     />
     <InsameeSelect
       v-else
+      :disabled="disabled"
       :variant="variant"
       :items="items"
       :placeholder="placeholder"
@@ -26,6 +27,10 @@
 export default {
   name: 'SimpleSelect',
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     value: {
       type: Object,
       required: true,
