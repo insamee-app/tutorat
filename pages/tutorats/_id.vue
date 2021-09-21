@@ -1,8 +1,14 @@
 <template>
   <InsameeAppContainer class="mx-auto space-y-8 overflow-hidden" small>
     <TutoratInformation :tutorat="tutorat" :is-creator="isCreator" />
-    <div v-if="isCreator" class="flex justify-end">
-      <InsameeAppButton @click="editDialog = true">Editer </InsameeAppButton>
+    <div v-if="isCreator" class="flex flex-col space-y-2">
+      <div class="flex justify-between">
+        <InsameeAppButton border @click="deleteTutorat">
+          Supprimer
+        </InsameeAppButton>
+        <InsameeAppButton @click="editDialog = true">Editer </InsameeAppButton>
+      </div>
+      <InsameeAppError :error-message="errorMessage" />
     </div>
     <TutoratActions
       :first-name="firstName"
@@ -40,7 +46,7 @@
       </div>
       <InsameeAppError
         v-else-if="isOffer && $fetchState.error"
-        :error-message="errorMessage"
+        :error-message="errorMessageProfiles"
       />
       <TutoratProfiles
         v-else-if="isOffer"
@@ -78,17 +84,21 @@ export default {
     Portal,
   },
   middleware: 'authenticated',
-  async asyncData({ $axios, params }) {
-    const { data } = await $axios.get(
-      `/api/v1/tutorats/${params.id}?platform=tutorat&serialize=full`
-    )
-
-    return { tutorat: data }
+  async asyncData({ $axios, params, error }) {
+    try {
+      const { data } = await $axios.get(
+        `/api/v1/tutorats/${params.id}?platform=tutorat&serialize=full`
+      )
+      return { tutorat: data }
+    } catch (e) {
+      error(e.response.data)
+    }
   },
   data() {
     return {
       profiles: [],
       pagination: {},
+      errorMessage: '',
       editDialog: false,
     }
   },
@@ -126,7 +136,7 @@ export default {
     isCreator() {
       return this.tutorat.user_id === this.profile.user_id
     },
-    errorMessage() {
+    errorMessageProfiles() {
       return "Une error est survenue dans le chargement des profils. Si l'erreur persiste, n'hésitez pas à nous contacter"
     },
   },
@@ -140,6 +150,17 @@ export default {
     this.parseUrl()
   },
   methods: {
+    async deleteTutorat() {
+      try {
+        await this.$axios.delete(
+          `/api/v1/tutorats/${this.tutorat.id}?platform=tutorat`
+        )
+        this.$router.push({ path: '/tutorats' })
+      } catch (error) {
+        const { message } = error.response.data
+        this.errorMessage = message
+      }
+    },
     updateTutorat(tutorat) {
       this.editDialog = false
       this.tutorat = Object.assign({}, tutorat)
