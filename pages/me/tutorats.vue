@@ -49,7 +49,12 @@
           Mais si tu penses que c’est une erreur de notre part, tu peux nous
           contacter pour palier à ce problème.
         </p>
-        <p>Tu peux aussi créer ton propre tutorat !</p>
+        <p>
+          Tu peux aussi créer
+          <InsameeAppButton :to="{ name: 'tutorats-create' }" inline empty>
+            ton propre tutorat !
+          </InsameeAppButton>
+        </p>
       </div>
       <div class="mt-8">
         <InsameeAppButton empty :to="{ name: 'contact' }">
