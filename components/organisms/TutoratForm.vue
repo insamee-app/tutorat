@@ -21,6 +21,14 @@ export default {
         time: {},
         text: '',
       },
+      defaultTutorat: {
+        school: {},
+        subject: {},
+        type: {},
+        siting: {},
+        time: {},
+        text: '',
+      },
     }
   },
   computed: {
@@ -47,6 +55,11 @@ export default {
   },
   mounted() {
     if (this.tutorat) {
+      this.assignTutorat()
+    }
+  },
+  methods: {
+    assignTutorat() {
       this.editedTutorat = Object.assign(this.editedTutorat, this.tutorat)
       if (this.tutorat.type) {
         const typesData = this.$store.getters['data/types']
@@ -66,9 +79,7 @@ export default {
           (siting) => siting.value === this.tutorat.siting
         )
       }
-    }
-  },
-  methods: {
+    },
     transformedTutorat() {
       const editedTutorat = {
         school: this.editedTutorat.school.value,
@@ -101,6 +112,13 @@ export default {
           this.errors = error.response.data.errors
         }
         this.loading = false
+      }
+    },
+    reset() {
+      if (this.tutorat) {
+        this.assignTutorat()
+      } else {
+        this.editedTutorat = Object.assign({}, this.defaultTutorat)
       }
     },
     updateSimpleSelect(name) {
@@ -139,7 +157,12 @@ export default {
 </script>
 
 <template>
-  <form class="space-y-4" action="#" @submit.prevent="send">
+  <form
+    class="space-y-4"
+    action="#"
+    @submit.prevent="send"
+    @reset.prevent="reset"
+  >
     <InsameeLabeledItem
       input
       label="Le type"
@@ -223,7 +246,10 @@ export default {
       label="La description du tutorat"
       :variant="variant"
     />
-    <div class="flex justify-end">
+    <div class="flex justify-between">
+      <InsameeAppButton type="reset" border :variant="variant">
+        Réinitialiser
+      </InsameeAppButton>
       <InsameeAppButton
         type="submit"
         :loading="loading"
