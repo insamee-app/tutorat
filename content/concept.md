@@ -4,7 +4,7 @@
 
 > La plateforme de mise en relation des étudiants et des tuteurs
 
-**Tutorat** est une plateforme de l'écosystème **TEAM**. Associé à Insamee, elle te permet de trouver le tutorat qui va t'aider dans vos études !
+**Tutorat** est une plateforme de l'écosystème **TEAM**. Associé à Insamee, elle te permet de trouver le tutorat qui va t'aider dans tes études !
 
 Avec **Tutorat**, tu vas pouvoir trouver des tuteurs pour t'aider à **progresser dans tes études**. Aussi, il t'est possible d'indiquer tes besoins afin qu'un tuteur puisse y répondre pour t'aider. Tu peux aussi **marquer ton intérêt** pour les différentes séances ou sur les demandes des autres utilisateurs. Réaliser un tutorat, c'est **aider un élève à progresser**, lui faire plaisir mais c'est aussi **progresser soi-même**, améliorer son aisance à l'oral et son éloquence. En proposant ton aider sur la plateforme, c'est tout gagnant pour tout le monde !
 
