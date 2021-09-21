@@ -141,6 +141,7 @@ export default {
 <template>
   <form class="space-y-4" action="#" @submit.prevent="send">
     <InsameeLabeledItem
+      input
       label="Le type"
       :variant="variant"
       class="mt-2"
@@ -156,7 +157,7 @@ export default {
         @selected="$v.editedTutorat.type.$model = $event"
       />
     </InsameeLabeledItem>
-    <InsameeLabeledItem label="Le sujet" class-name="text-base">
+    <InsameeLabeledItem label="Le sujet" class-name="text-base" input>
       <SimpleSelect
         :disabled="isEdit"
         :value="$v.editedTutorat.subject.$model"
@@ -170,6 +171,7 @@ export default {
     </InsameeLabeledItem>
     <InsameeLabeledItem
       v-if="isOffer"
+      input
       label="La durée"
       :variant="variant"
       class="mt-2"
@@ -186,6 +188,7 @@ export default {
     </InsameeLabeledItem>
     <InsameeLabeledItem
       v-if="isOffer"
+      input
       label="Le lieu"
       :variant="variant"
       class="mt-2"
@@ -200,7 +203,7 @@ export default {
         @selected="$v.editedTutorat.siting.$model = $event"
       />
     </InsameeLabeledItem>
-    <InsameeLabeledItem label="L'école" class-name="text-base">
+    <InsameeLabeledItem label="L'école" class-name="text-base" input>
       <SimpleSelect
         :disabled="isEdit"
         :value="$v.editedTutorat.school.$model"
