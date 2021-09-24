@@ -32,7 +32,16 @@
     </section>
     <section class="space-y-4">
       <h2 class="text-xl font-bold">Paramètre du compte</h2>
-      <div class="text-center space-y-4">
+      <div class="space-y-4">
+        <InsameeLabeledCheck
+          :value="profile.user.email_interested_tutorat"
+          class="mt-2"
+          name="rememberMe"
+          title="Cela me permet d'être informé des offres qui pourrait m'intéresser"
+          label="Je souhaite être notifié par mail lorsqu'une offre qui correspond à une demande à laquelle j'ai montré mon intérêt est créée"
+          @change="sendEmailInterestedTutorat"
+        />
+        <InsameeAppError :error-message="errorMessage" />
         <InsameeAppLink :link="`${$config.insameeURL}/mee`">
           Se rendre sur insamee.fr
         </InsameeAppLink>
@@ -63,6 +72,8 @@ export default {
   data() {
     return {
       editProfile: false,
+      loading: false,
+      errorMessage: '',
     }
   },
   computed: {
@@ -73,6 +84,27 @@ export default {
     },
     lgAndUp() {
       return this.$screen.lg
+    },
+  },
+  methods: {
+    async sendEmailInterestedTutorat(value) {
+      if (this.loading) {
+        return
+      }
+
+      this.loading = true
+      try {
+        const { data } = await this.$axios.patch(
+          `/api/v1/users/${this.profile.user_id}?platform=tutorat`,
+          {
+            emailInterestedTutorat: value,
+          }
+        )
+        this.$store.commit('auth/setUser', data)
+      } catch (error) {
+        this.errorMessage = 'Une erreur est survenue'
+      }
+      this.loading = false
     },
   },
 }
