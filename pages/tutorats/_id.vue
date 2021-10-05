@@ -115,6 +115,7 @@ export default {
         instagram: this.tutorat.profile.url_instagram,
         twitter: this.tutorat.profile.url_twitter,
         mobile: this.tutorat.profile.mobile,
+        email: this.tutorat.profile.user.email,
       }
     },
     isOffer() {
