@@ -58,31 +58,21 @@
         @pagination="refreshProfilesPagination"
       />
     </div>
-    <Portal v-if="editDialog">
-      <InsameeAppModal
-        overflow
-        :value="editDialog"
-        @outside="editDialog = false"
-      >
-        <TutoratFormCard
-          closable
-          :tutorat="tutorat"
-          @close="editDialog = false"
-          @success="updateTutorat"
-        />
-      </InsameeAppModal>
-    </Portal>
+    <InsameeAppModal overflow :value="editDialog" @outside="editDialog = false">
+      <TutoratFormCard
+        closable
+        :tutorat="tutorat"
+        @close="editDialog = false"
+        @success="updateTutorat"
+      />
+    </InsameeAppModal>
   </InsameeAppContainer>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { Portal } from '@linusborg/vue-simple-portal'
 
 export default {
-  components: {
-    Portal,
-  },
   middleware: 'authenticated',
   async asyncData({ $axios, params, error }) {
     try {

@@ -1,11 +1,6 @@
 <script>
-import { Portal } from '@linusborg/vue-simple-portal'
-
 export default {
   name: 'TutoratActions',
-  components: {
-    Portal,
-  },
   props: {
     firstName: {
       type: String,
@@ -70,17 +65,13 @@ export default {
         Signaler le tutorat
       </InsameeAppButton>
     </Report>
-    <Portal v-if="dialogContact">
-      <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
-        <InsameeAppCard>
-          <InsameeAppCardHeader closable @close="dialogContact = false">
-            <InsameeAppCardTitle>
-              Contacter {{ firstName }}
-            </InsameeAppCardTitle>
-          </InsameeAppCardHeader>
-          <InsameeAppContact :links="socials" />
-        </InsameeAppCard>
-      </InsameeAppModal>
-    </Portal>
+    <InsameeAppModal :value="dialogContact" @outside="dialogContact = false">
+      <InsameeAppCard>
+        <InsameeAppCardHeader closable @close="dialogContact = false">
+          <InsameeAppCardTitle> Contacter {{ firstName }} </InsameeAppCardTitle>
+        </InsameeAppCardHeader>
+        <InsameeAppContact :links="socials" />
+      </InsameeAppCard>
+    </InsameeAppModal>
   </section>
 </template>

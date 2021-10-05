@@ -58,15 +58,13 @@
       <InsameeAppButton shadow variant="secondary" @click="modalFilters = true">
         {{ filterMessage }}
       </InsameeAppButton>
-      <Portal>
-        <InsameeAppModal :value="modalFilters" @outside="modalFilters = $event">
-          <FiltersCard
-            closable
-            @submit="refreshFilters"
-            @close="modalFilters = !$event"
-          />
-        </InsameeAppModal>
-      </Portal>
+      <InsameeAppModal :value="modalFilters" @outside="modalFilters = $event">
+        <FiltersCard
+          closable
+          @submit="refreshFilters"
+          @close="modalFilters = !$event"
+        />
+      </InsameeAppModal>
     </template>
     <template #pagination="{ classNames }">
       <InsameeResponsiveListPagination :class="classNames">
@@ -92,10 +90,8 @@
 
 <script>
 import getTexts from '@/mixins/getTexts'
-import { Portal } from '@linusborg/vue-simple-portal'
 
 export default {
-  components: { Portal },
   mixins: [getTexts],
   middleware: 'authenticated',
   data() {
