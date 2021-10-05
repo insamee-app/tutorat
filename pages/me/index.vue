@@ -42,9 +42,11 @@
           @change="sendEmailInterestedTutorat"
         />
         <InsameeAppError :error-message="errorMessage" />
-        <InsameeAppLink :link="`${$config.insameeURL}/mee`">
-          Se rendre sur insamee.fr
-        </InsameeAppLink>
+        <div>
+          <InsameeAppLink :link="`${$config.insameeURL}/mee`">
+            Se rendre sur insamee.fr
+          </InsameeAppLink>
+        </div>
       </div>
     </section>
     <InsameeAppModal
