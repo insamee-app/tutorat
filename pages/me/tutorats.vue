@@ -119,6 +119,11 @@ export default {
     this.tutorats = data.data
     this.pagination = data.meta
   },
+  head() {
+    return {
+      title: `Mes tutorats`,
+    }
+  },
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
     mdAndDown() {

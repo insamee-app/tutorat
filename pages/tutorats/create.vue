@@ -1,5 +1,10 @@
 <script>
 export default {
+  head() {
+    return {
+      title: `Créer un tutorat`,
+    }
+  },
   methods: {
     changePage(data) {
       this.$router.push({ name: 'tutorats-id', params: { id: data.id } })

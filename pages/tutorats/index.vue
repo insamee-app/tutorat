@@ -110,6 +110,11 @@ export default {
     this.tutorats = data.data
     this.pagination = data.meta
   },
+  head() {
+    return {
+      title: 'Les tutorats',
+    }
+  },
   computed: {
     mdAndDown() {
       return !this.$screen.lg

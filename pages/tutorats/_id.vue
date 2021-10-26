@@ -104,6 +104,11 @@ export default {
     this.profiles = data.data
     this.pagination = data.meta
   },
+  head() {
+    return {
+      title: `${this.tutorat.type} de ${this.tutorat.subject.name}`,
+    }
+  },
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
     firstName() {
