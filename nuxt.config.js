@@ -64,6 +64,8 @@ export default {
     '@nuxt/content',
     // https://www.npmjs.com/package/vue-screen
     'vue-screen/nuxt',
+    // https://image.nuxtjs.org/
+    '@nuxt/image',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -80,8 +82,9 @@ export default {
   build: {},
 
   publicRuntimeConfig: {
-    insameeURL: process.env.INSAMEE_URL,
+    meeURL: process.env.MEE_URL,
     associationsURL: process.env.ASSOCIATIONS_URL,
+    evenementsURL: process.env.EVENEMENTS_URL,
     mailContact: process.env.MAIL_CONTACT,
   },
 }
