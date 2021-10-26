@@ -6,6 +6,11 @@
 
 <script>
 export default {
+  head() {
+    return {
+      title: 'Nous contacter',
+    }
+  },
   computed: {
     mail() {
       return 'mailto:' + this.$config.mailContact

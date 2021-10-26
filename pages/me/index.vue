@@ -78,6 +78,11 @@ export default {
       errorMessage: '',
     }
   },
+  head() {
+    return {
+      title: `Mon profil`,
+    }
+  },
   computed: {
     ...mapState({ profile: (state) => state.auth.profile }),
     ...mapGetters({ socials: 'auth/socialNetworks' }),
